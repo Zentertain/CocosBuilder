@@ -127,6 +127,224 @@
     return NO;
 }*/
 
+
+-(void)addStringProperty:(NSString*)key value:(NSString*)value filedata:(NSMutableString*)data
+{
+    [data appendString:@"\""];
+    [data appendString:key];
+    [data appendString:@"\":"];
+     
+    [data appendString:@"\""];
+    [data appendString:value];
+    [data appendString:@"\","];
+}
+
+-(void)addIntProperty:(NSString*)key value:(NSNumber*)value filedata:(NSMutableString*)data
+{
+    [data appendString:@"\""];
+    [data appendString:key];
+    [data appendString:@"\":"];
+    
+    [data appendString:[NSString stringWithFormat:@"%d",[value intValue]]];
+    [data appendString:@","];   
+}
+
+-(void)addFloatProperty:(NSString*)key value:(NSNumber*)value  filedata:(NSMutableString*)data
+{
+    [data appendString:@"\""];
+    [data appendString:key];
+    [data appendString:@"\":"];
+    
+    [data appendString:[NSString stringWithFormat:@"%f",[value floatValue]]];
+    [data appendString:@","];
+    
+}
+
+-(void)addBoolProperty:(NSString*)key value:(NSNumber*)value filedata:(NSMutableString*)data
+{
+    [data appendString:@"\""];
+    [data appendString:key];
+    [data appendString:@"\":"];
+    
+    [data appendString:[NSString stringWithFormat:@"%d",[value boolValue]]];
+    [data appendString:@","];
+}
+
+-(BOOL)writeNodeInJson:(NSDictionary*)node filedata:(NSMutableString*)data tagarray:(NSMutableSet*)tagarray
+{
+    NSString* class = [node objectForKey:@"customClass"];
+    
+    BOOL hasCustomClass = YES;
+    if (!class || [class isEqualToString:@""])
+    {
+        class = [node objectForKey:@"baseClass"];
+        hasCustomClass = NO;
+    }
+    
+//    if(!( [class isEqualToString:@"CCLabelTTF"] || [class isEqualToString:@"CCScale9Sprite"] ||  [class isEqualToString:@"CCSprite"]))
+//        return YES;
+    
+    [data appendString:@"{"];
+    
+    [self addStringProperty:@"class" value:class filedata:data];
+    
+    // Write properties
+    NSArray* props = [node objectForKey:@"properties"];
+
+    for (int i = 0; i < [props count]; i++)
+    {
+        NSDictionary* prop = [props objectAtIndex:i];
+        
+        id value = [prop objectForKey:@"value"];
+        NSString* name = [prop objectForKey:@"name"];
+        
+        if (value)
+        {
+            if ([name isEqualToString:@"position"])
+            {
+                [self addFloatProperty:@"posX" value:[value objectAtIndex:0] filedata:data];
+                [self addFloatProperty:@"posY" value:[value objectAtIndex:1] filedata:data];
+                [self addIntProperty:@"alignment" value:[value objectAtIndex:2] filedata:data];
+            }
+            else if ([name isEqualToString:@"scale"])
+            {
+                [self addFloatProperty:@"scaleX" value:[value objectAtIndex:0] filedata:data];
+                [self addFloatProperty:@"scaleY" value:[value objectAtIndex:1] filedata:data];
+            }
+            else if ([name isEqualToString:@"rotation"])
+            {
+                [self addFloatProperty:@"rotation" value:value filedata:data];
+            }
+            else if ([name isEqualToString:@"flip"])
+            {
+                [self addBoolProperty:@"flipX" value:[value objectAtIndex:0] filedata:data];
+                [self addBoolProperty:@"flipY" value:[value objectAtIndex:1] filedata:data];
+            }
+            else if ([name isEqualToString:@"color"])
+            {
+                [self addIntProperty:@"colorR" value:[value objectAtIndex:0] filedata:data];
+                [self addIntProperty:@"colorG" value:[value objectAtIndex:1] filedata:data];
+                [self addIntProperty:@"colorB" value:[value objectAtIndex:2] filedata:data];
+            }
+            else if ([name isEqualToString:@"tag"])
+            {
+                if([value intValue] != -1)
+                {
+                    BOOL error = [tagarray containsObject:value];
+                    if(error)
+                    {
+                        return NO;
+                    }
+                    [tagarray addObject:value];                 
+                }
+
+                [self addIntProperty:@"tag" value:value filedata:data];
+            }
+            else if ([name isEqualToString:@"spriteFrame"])
+            {
+                [self addStringProperty:@"image" value:[value objectAtIndex:1] filedata:data];
+            }
+            else if ([name isEqualToString:@"displayFrame"])
+            {
+                [self addStringProperty:@"image" value:[value objectAtIndex:1] filedata:data];
+            }
+            else if ([name isEqualToString:@"preferedSize"])
+            {
+                [self addFloatProperty:@"preferedSizeX" value:[value objectAtIndex:0] filedata:data];
+                [self addFloatProperty:@"preferedSizeY" value:[value objectAtIndex:1] filedata:data];
+            }
+            else if ([name isEqualToString:@"fontName"])
+            {
+                [self addStringProperty:@"fontName" value:value filedata:data];
+            }
+            else if ([name isEqualToString:@"fontSize"])
+            {
+                [self addFloatProperty:@"fontSize" value:[value objectAtIndex:0] filedata:data];
+            }
+            else if ([name isEqualToString:@"dimensions"])
+            {
+                [self addFloatProperty:@"dimensionsX" value:[value objectAtIndex:0] filedata:data];
+                [self addFloatProperty:@"dimensionsY" value:[value objectAtIndex:1] filedata:data];
+            }
+            else if ([name isEqualToString:@"horizontalAlignment"])
+            {
+                [self addIntProperty:@"horizontalAlignment" value:value filedata:data];
+            }
+            else if ([name isEqualToString:@"verticalAlignment"])
+            {
+                [self addIntProperty:@"verticalAlignment" value:value filedata:data];
+            }
+            else if ([name isEqualToString:@"string"])
+            {
+                [self addStringProperty:@"string" value:value filedata:data];
+            }
+        }
+    }
+    
+    NSArray* children = [node objectForKey:@"children"];
+    if ([children count] > 0) {
+        [data appendString:@"\"children\":"];
+        [data appendString:@"["];
+        for (int i = 0; i < [children count]; i++)
+        {
+            [self writeNodeInJson:[children objectAtIndex:i] filedata:data tagarray:tagarray];
+            
+            if(i < [children count] - 1)
+            {
+                [data appendString:@","];
+            }
+        }
+        [data appendString:@"]"];
+    } else {
+        // Remove the trailing ","
+        NSRange range = NSMakeRange(data.length-1,1);
+        [data deleteCharactersInRange:range];
+    }
+    
+    [data appendString:@"}"];
+    
+    return YES;
+}
+
+-(BOOL)publishJson:(NSDictionary*)doc path:(NSString*)dstFile src:(NSString*)srcfile
+{
+    NSDictionary* root = [doc objectForKey:@"nodeGraph"];
+    NSArray* children = [root objectForKey:@"children"];
+    
+    NSArray* sequences = [doc objectForKey:@"sequences"];
+    
+    NSMutableString* data = [[NSMutableString alloc] init];
+    
+    NSMutableSet* tagarray = [[NSMutableSet alloc] init];
+    
+    if(![self writeNodeInJson:root filedata:data tagarray:tagarray])
+    {
+        [warnings addWarningWithDescription:[NSString stringWithFormat:@"Tag is reduplicate in %@ !!",srcfile] isFatal:YES];
+    }
+    
+//    [data appendString:@"["];
+//    for (int i = 0; i < [children count]; i++)
+//    {
+//        if(![self writeNodeInJson:[children objectAtIndex:i] filedata:data tagarray:tagarray])
+//        {
+//            [warnings addWarningWithDescription:[NSString stringWithFormat:@"Tag is reduplicate in %@ !!",srcfile] isFatal:YES];
+//        }
+//
+//        if(i < [children count] - 1)
+//        {
+//            [data appendString:@","];
+//        }
+//    }
+//    [data appendString:@"]"];
+    
+    NSError *error;
+    BOOL success = [data writeToFile:dstFile atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    
+    [data release];
+    
+    return success;
+}
+
 - (BOOL) publishCCBFile:(NSString*)srcFile to:(NSString*)dstFile
 {
     PlugInExport* plugIn = [[PlugInManager sharedManager] plugInExportForExtension:publishFormat];
@@ -143,6 +361,10 @@
         [warnings addWarningWithDescription:[NSString stringWithFormat:@"Failed to publish ccb-file. File is in invalid format: %@",srcFile] isFatal:NO];
         return YES;
     }
+
+    //Publish Layout in json
+    NSString* layoutPath = [dstFile stringByReplacingOccurrencesOfString:@".ccbi" withString:@".json"];
+    [self publishJson:doc path:layoutPath src:srcFile];
     
     // Export file
     plugIn.flattenPaths = projectSettings.flattenPaths;
