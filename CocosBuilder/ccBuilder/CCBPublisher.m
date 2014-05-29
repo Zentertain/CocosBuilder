@@ -127,12 +127,26 @@
     return NO;
 }*/
 
-
--(void)addStringProperty:(NSString*)key value:(NSString*)value filedata:(NSMutableString*)data
+-(void)addKey:(NSString*)key filedata:(NSMutableString*)data
 {
     [data appendString:@"\""];
     [data appendString:key];
     [data appendString:@"\":"];
+}
+
+-(void)addEndCharWithCheck:(NSString*)endChar filedata:(NSMutableString*)data
+{
+    int len = [data length];
+    if ([data characterAtIndex:len-1] == ',') {
+        NSRange range = NSMakeRange(len-1,1);
+        [data deleteCharactersInRange:range];
+    }
+    [data appendString:endChar];
+}
+
+-(void)addStringProperty:(NSString*)key value:(NSString*)value filedata:(NSMutableString*)data
+{
+    [self addKey:key filedata:data];
      
     [data appendString:@"\""];
     [data appendString:value];
@@ -141,9 +155,7 @@
 
 -(void)addIntProperty:(NSString*)key value:(NSNumber*)value filedata:(NSMutableString*)data
 {
-    [data appendString:@"\""];
-    [data appendString:key];
-    [data appendString:@"\":"];
+    [self addKey:key filedata:data];
     
     [data appendString:[NSString stringWithFormat:@"%d",[value intValue]]];
     [data appendString:@","];   
@@ -151,9 +163,7 @@
 
 -(void)addFloatProperty:(NSString*)key value:(NSNumber*)value  filedata:(NSMutableString*)data
 {
-    [data appendString:@"\""];
-    [data appendString:key];
-    [data appendString:@"\":"];
+    [self addKey:key filedata:data];
     
     [data appendString:[NSString stringWithFormat:@"%f",[value floatValue]]];
     [data appendString:@","];
@@ -162,35 +172,16 @@
 
 -(void)addBoolProperty:(NSString*)key value:(NSNumber*)value filedata:(NSMutableString*)data
 {
-    [data appendString:@"\""];
-    [data appendString:key];
-    [data appendString:@"\":"];
+    [self addKey:key filedata:data];
     
     [data appendString:[NSString stringWithFormat:@"%d",[value boolValue]]];
     [data appendString:@","];
 }
 
--(BOOL)writeNodeInJson:(NSDictionary*)node filedata:(NSMutableString*)data tagarray:(NSMutableSet*)tagarray
+-(BOOL)writeProperties:(NSDictionary*)node filedata:(NSMutableString*)data tagarray:(NSMutableSet*)tagarray
 {
-    NSString* class = [node objectForKey:@"customClass"];
-    
-    BOOL hasCustomClass = YES;
-    if (!class || [class isEqualToString:@""])
-    {
-        class = [node objectForKey:@"baseClass"];
-        hasCustomClass = NO;
-    }
-    
-//    if(!( [class isEqualToString:@"CCLabelTTF"] || [class isEqualToString:@"CCScale9Sprite"] ||  [class isEqualToString:@"CCSprite"]))
-//        return YES;
-    
-    [data appendString:@"{"];
-    
-    [self addStringProperty:@"class" value:class filedata:data];
-    
-    // Write properties
     NSArray* props = [node objectForKey:@"properties"];
-
+    
     for (int i = 0; i < [props count]; i++)
     {
         NSDictionary* prop = [props objectAtIndex:i];
@@ -235,9 +226,9 @@
                     {
                         return NO;
                     }
-                    [tagarray addObject:value];                 
+                    [tagarray addObject:value];
                 }
-
+                
                 [self addIntProperty:@"tag" value:value filedata:data];
             }
             else if ([name isEqualToString:@"spriteFrame"])
@@ -281,27 +272,116 @@
         }
     }
     
+    return YES;
+}
+
+-(void)writeKeyframe:(NSDictionary*)keyframe filedata:(NSMutableString*)data
+{
+    [data appendString:@"{"];
+    [self addFloatProperty:@"time" value:[keyframe objectForKey:@"time"] filedata:data];
+    
+    id value = [keyframe objectForKey:@"value"];
+    NSString* name = [keyframe objectForKey:@"name"];
+    
+    if (value)
+    {
+        if ([name isEqualToString:@"position"])
+        {
+            [self addFloatProperty:@"posX" value:[value objectAtIndex:0] filedata:data];
+            [self addFloatProperty:@"posY" value:[value objectAtIndex:1] filedata:data];
+        }
+    }
+    [self addEndCharWithCheck:@"}" filedata:data];
+}
+
+-(void)writeAnimations:(NSDictionary*)node filedata:(NSMutableString*)data
+{
+    NSDictionary* animations = [node objectForKey:@"animatedProperties"];
+    
+    if ([animations count] > 0) {
+        [data appendString:@"\"animations\":{"];
+        for(NSString* key in animations) {
+            NSLog(@"key=%@ value=%@", key, [animations objectForKey:key]);
+            
+            [self addKey:key filedata:data];
+            [data appendString:@"{"];
+            NSDictionary* ani = [animations objectForKey:key];
+            
+            for(NSString* k in ani) {
+                [self addKey:k filedata:data];
+                [data appendString:@"["];
+                
+                NSDictionary* aniData = [ani objectForKey:k];
+                NSArray* keyframes = [aniData objectForKey:@"keyframes"];
+                
+                for (NSDictionary* keyframe in keyframes) {
+                    [self writeKeyframe:keyframe filedata:data];
+                }
+                [self addEndCharWithCheck:@"]" filedata:data];
+            }
+            [self addEndCharWithCheck:@"}" filedata:data];
+        }
+        [self addEndCharWithCheck:@"}" filedata:data];
+    }
+    
+}
+
+-(BOOL)writeNodeInJson:(NSDictionary*)node sequences:(NSArray*)sequences filedata:(NSMutableString*)data tagarray:(NSMutableSet*)tagarray
+{
+    NSString* class = [node objectForKey:@"customClass"];
+    
+    BOOL hasCustomClass = YES;
+    if (!class || [class isEqualToString:@""])
+    {
+        class = [node objectForKey:@"baseClass"];
+        hasCustomClass = NO;
+    }
+    
+//    if(!( [class isEqualToString:@"CCLabelTTF"] || [class isEqualToString:@"CCScale9Sprite"] ||  [class isEqualToString:@"CCSprite"]))
+//        return YES;
+    
+    [data appendString:@"{"];
+    
+    [self addStringProperty:@"class" value:class filedata:data];
+    
+    // Write properties
+    if(![self writeProperties:node filedata:data tagarray:tagarray])
+    {
+        return NO;
+    }
+    
+    [self writeAnimations:node filedata:data];
+    
     NSArray* children = [node objectForKey:@"children"];
     if ([children count] > 0) {
         [data appendString:@"\"children\":"];
         [data appendString:@"["];
         for (int i = 0; i < [children count]; i++)
         {
-            [self writeNodeInJson:[children objectAtIndex:i] filedata:data tagarray:tagarray];
+            [self writeNodeInJson:[children objectAtIndex:i] sequences:nil filedata:data tagarray:tagarray];
             
             if(i < [children count] - 1)
             {
                 [data appendString:@","];
             }
         }
-        [data appendString:@"]"];
-    } else {
-        // Remove the trailing ","
-        NSRange range = NSMakeRange(data.length-1,1);
-        [data deleteCharactersInRange:range];
+        [self addEndCharWithCheck:@"]" filedata:data];
+        [data appendString:@","];
     }
     
-    [data appendString:@"}"];
+    if (sequences) {
+        [self addKey:@"sequences" filedata:data];
+        [data appendString:@"{"];
+        for (NSDictionary* seq in sequences) {
+            NSString* name = [seq objectForKey:@"name"];
+            id value = [seq objectForKey:@"sequenceId"];
+            
+            [self addIntProperty:name value:value filedata:data];
+        }
+        [self addEndCharWithCheck:@"}" filedata:data];
+    }
+    
+    [self addEndCharWithCheck:@"}" filedata:data];
     
     return YES;
 }
@@ -317,25 +397,10 @@
     
     NSMutableSet* tagarray = [[NSMutableSet alloc] init];
     
-    if(![self writeNodeInJson:root filedata:data tagarray:tagarray])
+    if(![self writeNodeInJson:root sequences:sequences filedata:data tagarray:tagarray])
     {
         [warnings addWarningWithDescription:[NSString stringWithFormat:@"Tag is reduplicate in %@ !!",srcfile] isFatal:YES];
     }
-    
-//    [data appendString:@"["];
-//    for (int i = 0; i < [children count]; i++)
-//    {
-//        if(![self writeNodeInJson:[children objectAtIndex:i] filedata:data tagarray:tagarray])
-//        {
-//            [warnings addWarningWithDescription:[NSString stringWithFormat:@"Tag is reduplicate in %@ !!",srcfile] isFatal:YES];
-//        }
-//
-//        if(i < [children count] - 1)
-//        {
-//            [data appendString:@","];
-//        }
-//    }
-//    [data appendString:@"]"];
     
     NSError *error;
     BOOL success = [data writeToFile:dstFile atomically:YES encoding:NSUTF8StringEncoding error:&error];
