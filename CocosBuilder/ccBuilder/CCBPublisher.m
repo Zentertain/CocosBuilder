@@ -388,26 +388,34 @@
 
 -(BOOL)publishJson:(NSDictionary*)doc path:(NSString*)dstFile src:(NSString*)srcfile
 {
-    NSDictionary* root = [doc objectForKey:@"nodeGraph"];
-    NSArray* children = [root objectForKey:@"children"];
+//    NSDictionary* root = [doc objectForKey:@"nodeGraph"];
+//    NSArray* children = [root objectForKey:@"children"];
+//    
+//    NSArray* sequences = [doc objectForKey:@"sequences"];
+//    
+//    NSMutableString* data = [[NSMutableString alloc] init];
+//    
+//    NSMutableSet* tagarray = [[NSMutableSet alloc] init];
+//    
+//    if(![self writeNodeInJson:root sequences:sequences filedata:data tagarray:tagarray])
+//    {
+//        [warnings addWarningWithDescription:[NSString stringWithFormat:@"Tag is reduplicate in %@ !!",srcfile] isFatal:YES];
+//    }
+//    
+//    NSError *error;
+//    BOOL success = [data writeToFile:dstFile atomically:YES encoding:NSUTF8StringEncoding error:&error];
+//    
+//    [data release];
+//    
+//    return success;
     
-    NSArray* sequences = [doc objectForKey:@"sequences"];
-    
-    NSMutableString* data = [[NSMutableString alloc] init];
-    
-    NSMutableSet* tagarray = [[NSMutableSet alloc] init];
-    
-    if(![self writeNodeInJson:root sequences:sequences filedata:data tagarray:tagarray])
-    {
-        [warnings addWarningWithDescription:[NSString stringWithFormat:@"Tag is reduplicate in %@ !!",srcfile] isFatal:YES];
-    }
-    
-    NSError *error;
-    BOOL success = [data writeToFile:dstFile atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    
-    [data release];
-    
-    return success;
+    NSOutputStream *os = [[NSOutputStream alloc] initToFileAtPath:dstFile append:NO];
+
+    [os open];
+    [NSJSONSerialization writeJSONObject:doc toStream:os options:0 error:nil];
+    [os close];
+
+    return YES;
 }
 
 - (BOOL) publishCCBFile:(NSString*)srcFile to:(NSString*)dstFile
