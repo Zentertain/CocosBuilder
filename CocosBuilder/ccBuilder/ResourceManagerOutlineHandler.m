@@ -288,7 +288,7 @@
     NSString* spriteSheetFile = NULL;
     NSString* ccbFile = NULL;
     NSString* audioFile = NULL;
-    
+    NSMutableArray *spriteFiles =  [NSMutableArray arrayWithCapacity:items.count];
     for (id item in items)
     {
         if ([item isKindOfClass:[RMResource class]])
@@ -297,6 +297,7 @@
             if (res.type == kCCBResTypeImage)
             {
                 spriteFile = [ResourceManagerUtil relativePathFromAbsolutePath: res.filePath];
+                [spriteFiles addObject:@[spriteFile]];
             }
             else if (res.type == kCCBResTypeCCBFile)
             {
@@ -312,7 +313,10 @@
             RMSpriteFrame* frame = item;
             spriteFile = frame.spriteFrameName;
             spriteSheetFile = [ResourceManagerUtil relativePathFromAbsolutePath: frame.spriteSheetFile];
-            if (!spriteSheetFile) spriteFile = NULL;
+            if (!spriteSheetFile)
+                spriteFile = NULL;
+            else
+                [spriteFiles addObject:@[spriteFile, spriteSheetFile]];
         }
     }
     
@@ -321,6 +325,7 @@
     {
         NSMutableDictionary* clipDict = [NSMutableDictionary dictionary];
         [clipDict setObject:spriteFile forKey:@"spriteFile"];
+        [clipDict setObject:spriteFiles forKey:@"spriteFiles"];
         if (spriteSheetFile)
         {
             [clipDict setObject:spriteSheetFile forKey:@"spriteSheetFile"];

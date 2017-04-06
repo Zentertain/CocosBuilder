@@ -38,23 +38,23 @@
 
 - (BOOL)performDragOperation:(id )sender
 {
-    BOOL dragSucceeded = [super performDragOperation:sender];
-    if (dragSucceeded) {
-        NSString *filenamesXML = [[sender draggingPasteboard] stringForType:NSFilenamesPboardType];
-        if (filenamesXML) {
-            NSArray *filenames = [NSPropertyListSerialization
-                                  propertyListFromData:[filenamesXML dataUsingEncoding:NSUTF8StringEncoding]
-                                  mutabilityOption:NSPropertyListImmutable
-                                  format:nil
-                                  errorDescription:nil];
-            if ([filenames count] >= 1) {
-                imagePath = [filenames objectAtIndex:0];
-            } else {
-                imagePath = nil;
-            }
-        }
-    }
-    return dragSucceeded;
+     BOOL dragSucceeded = [super performDragOperation:sender];
+     if (dragSucceeded) {
+         NSString *filenamesXML = [[sender draggingPasteboard] stringForType:NSFilenamesPboardType];
+         if (filenamesXML) {
+             NSArray *filenames = [NSPropertyListSerialization
+                                   propertyListFromData:[filenamesXML dataUsingEncoding:NSUTF8StringEncoding]
+                                   mutabilityOption:NSPropertyListImmutable
+                                   format:nil
+                                   errorDescription:nil];
+             if ([filenames count] >= 1) {
+                 imagePath = [filenames objectAtIndex:0];
+             } else {
+                 imagePath = nil;
+             }
+         }
+     }
+     return dragSucceeded;
 }
 
 @end

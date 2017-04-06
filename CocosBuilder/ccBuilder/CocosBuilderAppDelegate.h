@@ -168,6 +168,7 @@ enum {
     BOOL defaultCanvasSize;
     
     IBOutlet NSMenuItem* menuItemJSControlled;
+    IBOutlet NSMenuItem* menuItemVarEditable;
     IBOutlet NSMenuItem* menuItemSafari;
     IBOutlet NSMenuItem* menuItemChrome;
     IBOutlet NSMenuItem* menuItemFirefox;
@@ -191,6 +192,7 @@ enum {
     // Documents
     NSMutableArray* delayOpenFiles;
     CCBDocument* currentDocument;
+    int chainedId;
     BOOL hasOpenedDocument;
     
     // PlugIns (nodes)
@@ -231,6 +233,7 @@ enum {
     
     // JavaScript bindings
     BOOL jsControlled;
+    BOOL varEditable;
     
 @private
     MainWindow *window;
@@ -313,6 +316,7 @@ enum {
 - (BOOL) addCCObject:(CCNode*)obj asChild:(BOOL)asChild;
 - (void) addPlugInNodeNamed:(NSString*)name asChild:(BOOL) asChild;
 - (void) deleteNode:(CCNode*)node;
+- (void) resetParasByCopy:(NSMutableDictionary*)clipDict;
 - (IBAction) pasteAsChild:(id)sender;
 - (IBAction) menuQuit:(id)sender;
 

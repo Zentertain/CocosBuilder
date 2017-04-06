@@ -80,7 +80,19 @@
     if (pdData)
     {
         NSDictionary* pdDict = [NSKeyedUnarchiver unarchiveObjectWithData:pdData];
-        [appDelegate dropAddSpriteNamed:[pdDict objectForKey:@"spriteFile"] inSpriteSheet:[pdDict objectForKey:@"spriteSheetFile"] at:ccp(pt.x,pt.y)];
+        NSMutableArray *spriteFiles = [pdDict objectForKey:@"spriteFiles"];
+        if (spriteFiles.count > 0)
+        {
+            for (NSArray *spriteArray in spriteFiles)
+            {
+                if (spriteArray.count == 1)
+                    [appDelegate dropAddSpriteNamed:[spriteArray objectAtIndex:0]
+                                      inSpriteSheet:NULL at:ccp(pt.x,pt.y)];
+                else if (spriteArray.count == 2)
+                    [appDelegate dropAddSpriteNamed:[spriteArray objectAtIndex:0]
+                                      inSpriteSheet:[spriteArray objectAtIndex:1] at:ccp(pt.x,pt.y)];
+            }
+        }
     }
     
     pdData = [pb dataForType:@"com.cocosbuilder.ccb"];

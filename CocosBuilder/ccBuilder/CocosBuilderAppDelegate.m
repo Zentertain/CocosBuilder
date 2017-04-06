@@ -318,6 +318,9 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     [cs setStageBorder:0];
     [self updateCanvasBorderMenu];
     [self updateJSControlledMenu];
+    
+    [self updateVarEditableMenu];
+
     [self updateDefaultBrowser];
     
     // Load plug-ins
@@ -838,7 +841,7 @@ static BOOL hideAllToNextSeparator;
     [menuTimelineChained removeAllItems];
     
     int currentId = sequenceHandler.currentSequence.sequenceId;
-    int chainedId = sequenceHandler.currentSequence.chainedSequenceId;
+    chainedId = sequenceHandler.currentSequence.chainedSequenceId;
     
     // Add dummy item
     NSMenuItem* itemDummy = [[[NSMenuItem alloc] initWithTitle:@"Dummy" action:NULL keyEquivalent:@""] autorelease];
@@ -926,6 +929,7 @@ static BOOL hideAllToNextSeparator;
     [dict setObject:[NSNumber numberWithInt:kCCBFileFormatVersion] forKey:@"fileVersion"];
     
     [dict setObject:[NSNumber numberWithBool:jsControlled] forKey:@"jsControlled"];
+    [dict setObject:[NSNumber numberWithBool:varEditable] forKey:@"varEditable"];
     
     [dict setObject:[NSNumber numberWithBool:[[CocosScene cocosScene] centeredOrigin]] forKey:@"centeredOrigin"];
     
@@ -991,6 +995,7 @@ static BOOL hideAllToNextSeparator;
     
     // Check for jsControlled
     jsControlled = [[doc objectForKey:@"jsControlled"] boolValue];
+    varEditable = [[doc objectForKey:@"varEditable"] boolValue];
     
     // Setup stage & resolutions
     NSMutableArray* serializedResolutions = [doc objectForKey:@"resolutions"];
@@ -1116,6 +1121,7 @@ static BOOL hideAllToNextSeparator;
     self.selectedNodes = loadedSelectedNodes;
     
     [self updateJSControlledMenu];
+    [self updateVarEditableMenu];
     [self updateCanvasBorderMenu];
 }
 
@@ -1626,10 +1632,10 @@ static BOOL hideAllToNextSeparator;
 {
     if (!currentDocument) return;
     
-    if (prop && [currentDocument.lastEditedProperty isEqualToString:prop])
-    {
-        return;
-    }
+//    if (prop && [currentDocument.lastEditedProperty isEqualToString:prop])
+//    {
+//        return;
+//    }
     
     NSMutableDictionary* doc = [self docDataFromCurrentNodeGraph];
     
@@ -1904,12 +1910,38 @@ static BOOL hideAllToNextSeparator;
     
     // Serialize selected node
     NSMutableDictionary* clipDict = [CCBWriterInternal dictionaryFromCCObject:self.selectedNode];
+    [self resetParasByCopy: clipDict];
+    
     NSData* clipData = [NSKeyedArchiver archivedDataWithRootObject:clipDict];
     NSPasteboard* cb = [NSPasteboard generalPasteboard];
     
     [cb declareTypes:[NSArray arrayWithObjects:@"com.cocosbuilder.node", nil] owner:self];
     [cb setData:clipData forType:@"com.cocosbuilder.node"];
 }
+
+- (void) resetParasByCopy:(NSMutableDictionary*)clipDict
+{
+    NSString * varAssignmentKey =[NSString stringWithCString: "memberVarAssignmentName" encoding:NSUTF8StringEncoding];
+    NSString * varAssignmentTypeKey =[NSString stringWithCString: "memberVarAssignmentType" encoding:NSUTF8StringEncoding];
+    NSString * jsControllerKey  =[NSString stringWithCString: "jsController" encoding:NSUTF8StringEncoding];
+    NSString * emptyStr =[NSString stringWithCString: "" encoding:NSUTF8StringEncoding];
+    
+    
+    [clipDict setObject: emptyStr forKey: varAssignmentKey];
+    [clipDict setObject: emptyStr forKey: jsControllerKey];
+    [clipDict setObject: [NSNumber numberWithFloat: 0] forKey: varAssignmentTypeKey];
+    [clipDict setObject: [NSString stringWithCString: "Mask"] forKey: [NSString stringWithCString: "DPSMask"]];
+    
+    for (NSMutableDictionary* clipDictChild in [clipDict objectForKey:@"children"])
+    {
+        if ([clipDictChild objectForKey:@"DPSMask"])
+            continue;
+        [self resetParasByCopy: clipDictChild];
+    }
+    return;
+}
+
+
 
 - (void) doPasteAsChild:(BOOL)asChild
 {
@@ -2029,12 +2061,39 @@ static BOOL hideAllToNextSeparator;
     [sequenceHandler updateOutlineViewSelection];
 }
 
+- (BOOL) canDelete: (NSMutableDictionary*)delDict
+{
+    [delDict setObject: [NSString stringWithCString: "Mask"] forKey: [NSString stringWithCString: "DPSMaskDel"]];
+    if (![[delDict objectForKey: @"memberVarAssignmentName"] isEqualToString: [NSString stringWithCString: ""]])
+         return false;
+    if (![[delDict objectForKey: @"memberVarAssignmentType"] isEqualToNumber: [NSNumber numberWithInt: 0]])
+    {
+        return false;
+    }
+    if ([delDict objectForKey: @"jsController"])
+    {
+        return false;
+    }
+    for (NSMutableDictionary* delDictChild in [delDict objectForKey:@"children"])
+    {
+        if ([delDictChild objectForKey:@"DPSMask"])
+            continue;
+        if (![self canDelete: delDictChild])
+            return false;
+    }
+    return true;
+}
 - (IBAction) delete:(id) sender
 {
     // First attempt to delete selected keyframes
     if ([sequenceHandler deleteSelectedKeyframesForCurrentSequence]) return;
     
     // Then delete the selected node
+    NSMutableDictionary* delDict = [CCBWriterInternal dictionaryFromCCObject:self.selectedNode];
+    if (![self canDelete:delDict])
+    {
+        return;
+    }
     NSArray* nodesToDelete = [NSArray arrayWithArray:self.selectedNodes];
     for (CCNode* node in nodesToDelete)
     {
@@ -2653,6 +2712,28 @@ static BOOL hideAllToNextSeparator;
         [menuItemJSControlled setState:NSOffState];
     }
 }
+
+
+
+
+- (int) isVarEditable
+{
+    return varEditable;
+}
+
+
+- (void) updateVarEditableMenu
+{
+    if (varEditable)
+    {
+        [menuItemVarEditable setState:NSOnState];
+    }
+    else
+    {
+        [menuItemVarEditable setState:NSOffState];
+    }
+}
+
 
 - (void) updateDefaultBrowser
 {
@@ -3540,6 +3621,15 @@ static BOOL hideAllToNextSeparator;
     [self updateInspectorFromSelection];
 }
 
+- (IBAction)menuVarEditable:(id)sender
+{
+    [self saveUndoStateWillChangeProperty:@"*varEditable"];
+    
+    varEditable = !varEditable;
+    [self updateVarEditableMenu];
+    [self updateInspectorFromSelection];
+}
+
 - (BOOL) validateMenuItem:(NSMenuItem *)menuItem
 {
     if (menuItem.action == @selector(saveDocument:)) return hasOpenedDocument;
@@ -3620,6 +3710,10 @@ static BOOL hideAllToNextSeparator;
         if (sequenceHandler.currentSequence.timelinePosition >= sequenceHandler.currentSequence.timelineLength)
         {
             [self playbackStop:NULL];
+            if (chainedId != -1)
+            {
+                [self playbackPlay: NULL];
+            }
         }
         else
         {
