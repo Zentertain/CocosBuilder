@@ -27,13 +27,14 @@
 @class ResourceManager;
 @class ResourceManagerPreviewView;
 
-@interface ResourceManagerOutlineHandler : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource>
+@interface ResourceManagerOutlineHandler : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource, NSTextFieldDelegate>
 {
     ResourceManager* resManager;
     NSOutlineView* resourceList;
     IBOutlet ResourceManagerPreviewView* imagePreview;
     IBOutlet NSTextField* lblNoPreview;
     int resType;
+    NSString *filter;
 }
 
 @property (nonatomic,assign) int resType;

@@ -220,7 +220,7 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
 
 - (void) setupResourceManager
 {
-    // Load resource manager
+    // Load resource manager 
     resManager = [ResourceManager sharedManager];
     //resManagerPanel = [[ResourceManagerPanel alloc] initWithWindowNibName:@"ResourceManagerPanel"];
     //[resManagerPanel.window setIsVisible:NO];
@@ -244,7 +244,7 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     
     // Setup project display
     projectOutlineHandler = [[ResourceManagerOutlineHandler alloc] initWithOutlineView:outlineProject resType:kCCBResTypeNone preview:previewViewOwner];
-    
+    resourceFilter.delegate = projectOutlineHandler;
     resourceManagerSplitView.delegate = previewViewOwner;
 }
 

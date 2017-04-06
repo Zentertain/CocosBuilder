@@ -49,6 +49,7 @@
     self = [super init];
     if (!self) return NULL;
     
+    filter = @"";
     resManager = [ResourceManager sharedManager];
     [resManager addResourceObserver:self];
     
@@ -92,14 +93,26 @@
             item = res.data;
         }
     }
+    if (![filter isEqualToString:@""]) {
+        if ([item isKindOfClass:[RMDirectory class]]){
+            RMDirectory* dir = item;
+            NSArray* children = [dir resourcesForType:resType];
+            int count = 0;
+            for (RMResource* res in children) {
+                if ([res.filePath containsString:filter] || res.type == kCCBResTypeDirectory) {
+                    count++;
+                }
+            }
+            return count;
+        } else {
+            return 0;
+        }
+    }
     
     // Handle different nodes
     if ([item isKindOfClass:[RMDirectory class]])
     {
         RMDirectory* dir = item;
-        
-        NSLog(@"resourcesForType: %d",resType);
-        
         NSArray* children = [dir resourcesForType:resType];
         return [children count];
     }
@@ -142,6 +155,25 @@
         if (res.type == kCCBResTypeDirectory)
         {
             item = res.data;
+        }
+    }
+    
+    if (![filter isEqualToString:@""]) {
+        if ([item isKindOfClass:[RMDirectory class]]){
+            RMDirectory* dir = item;
+            NSArray* children = [dir resourcesForType:resType];
+            int count = 0;
+            for (RMResource* res in children) {
+                if ([res.filePath containsString:filter] || res.type == kCCBResTypeDirectory) {
+                    if (count == index) {
+                        return res;
+                    }
+                    count++;
+                }
+            }
+            return NULL;
+        } else {
+            return NULL;
         }
     }
     
@@ -280,6 +312,15 @@
         icon = [self smallIconForFileType:@"p12"];
     }
     [cell setImage:icon];
+}
+
+- (void)controlTextDidChange:(NSNotification *)notification {
+    NSTextField *textField = [notification object];
+    filter = [textField stringValue];
+    [self reload];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [resourceList expandItem:nil expandChildren:YES];
+    });
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pasteboard

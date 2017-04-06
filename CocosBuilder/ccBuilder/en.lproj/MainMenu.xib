@@ -1125,23 +1125,23 @@ CA
                                 <rect key="frame" x="0.0" y="16" width="250" height="648"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <customView hidden="YES" id="1957">
-                                        <rect key="frame" x="0.0" y="0.0" width="250" height="175"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <customView id="1957">
+                                        <rect key="frame" x="0.0" y="0.0" width="250" height="159"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                     </customView>
                                     <customView id="1958">
-                                        <rect key="frame" x="0.0" y="1" width="250" height="647"/>
+                                        <rect key="frame" x="0.0" y="160" width="250" height="488"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
-                                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="18" horizontalPageScroll="10" verticalLineScroll="18" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="1498">
-                                                <rect key="frame" x="0.0" y="0.0" width="250" height="647"/>
+                                            <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="18" horizontalPageScroll="10" verticalLineScroll="18" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="1498">
+                                                <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <clipView key="contentView" copiesOnScroll="NO" id="eSV-77-Z3r">
-                                                    <rect key="frame" x="0.0" y="0.0" width="250" height="647"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" autosaveColumns="NO" rowHeight="16" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="1502" id="1499" customClass="ResourceManagerOutlineView">
-                                                            <rect key="frame" x="0.0" y="0.0" width="250" height="647"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <size key="intercellSpacing" width="3" height="2"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1224,6 +1224,15 @@ CA
                                 <rect key="frame" x="27" y="0.0" width="5" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </box>
+                            <textField verticalHuggingPriority="750" misplaced="YES" allowsCharacterPickerTouchBarItem="NO" id="7BB-Z7-wIy">
+                                <rect key="frame" x="50" y="664" width="200" height="15"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="ZyP-M0-MeZ">
+                                    <font key="font" metaFont="miniSystem"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                     </customView>
                     <splitView canDrawConcurrently="YES" dividerStyle="thin" id="1530" userLabel="Center HorSplit Panel" customClass="CCBSplitHorizontalView">
@@ -1695,6 +1704,7 @@ CA
                 <outlet property="outlineProject" destination="1499" id="1504"/>
                 <outlet property="panelVisibilityControl" destination="1786" id="1794"/>
                 <outlet property="previewViewContainer" destination="1957" id="1959"/>
+                <outlet property="resourceFilter" destination="7BB-Z7-wIy" id="Oc5-MV-kFN"/>
                 <outlet property="resourceManagerSplitView" destination="1956" id="1960"/>
                 <outlet property="rightPanel" destination="1795" id="1796"/>
                 <outlet property="scrubberSelectionView" destination="1561" id="1562"/>

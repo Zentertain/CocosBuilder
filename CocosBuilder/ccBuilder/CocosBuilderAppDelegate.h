@@ -179,7 +179,7 @@ enum {
     NSView* previewView;
     ResourceManagerPreviewView* previewViewOwner;
     IBOutlet NSSplitView* resourceManagerSplitView;
-    
+    IBOutlet NSTextField* resourceFilter;
     //ResourceManagerPanel* resManagerPanel;
     
     // Project
