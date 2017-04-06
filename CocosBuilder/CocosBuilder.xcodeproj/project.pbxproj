@@ -5692,6 +5692,7 @@
 					"\"$(SRCROOT)/libs/Tupac\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = CocosBuilder;
 				WRAPPER_EXTENSION = app;
 			};
@@ -5728,6 +5729,7 @@
 					"\"$(SRCROOT)/libs/Tupac\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = CocosBuilder;
 				WRAPPER_EXTENSION = app;
 			};

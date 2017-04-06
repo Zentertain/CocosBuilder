@@ -32,7 +32,7 @@
     self = [super init];
     if (!self) return NULL;
     
-    self.positionType = kCCPositionTypeGrouped;
+    self.positionType = kCCPositionTypeRelative;
     self.particleActive = YES;
     return self;
 }
