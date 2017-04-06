@@ -25,5 +25,5 @@
 #import "cocos2d.h"
 
 @interface CCBPParticleSystem : CCParticleSystemQuad
-
+@property(nonatomic, assign, readwrite) BOOL particleActive;
 @end

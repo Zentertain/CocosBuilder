@@ -25,6 +25,7 @@
 #import "CCBPParticleSystem.h"
 
 @implementation CCBPParticleSystem
+@synthesize particleActive = _particleActive;
 
 - (id) init
 {
@@ -32,11 +33,27 @@
     if (!self) return NULL;
     
     self.positionType = kCCPositionTypeGrouped;
-    
+    self.particleActive = YES;
     return self;
 }
 
 #pragma mark Gravity mode
+
+-(BOOL) particleActive{
+    return _particleActive;
+}
+
+-(void)setParticleActive:(BOOL)pa{
+    if (_particleActive == pa) {
+        return;
+    }
+    _particleActive = pa;
+    if (_particleActive) {
+        [self resetSystem];
+    } else {
+        [self stopSystem];
+    }
+}
 
 - (CGPoint) gravity
 {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		37AD8EDF1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 37AD8EDD1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.m */; };
 		581130601639C52500A86D70 /* seq-startmarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 5811305F1639C52000A86D70 /* seq-startmarker.png */; };
 		581BCFE8162DADE7007DE600 /* CCBSplitHorizontalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 581BCFE7162DADE7007DE600 /* CCBSplitHorizontalView.m */; };
 		58FA2034162D73F3006B8856 /* TB_bottomPanel.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA2031162D73F3006B8856 /* TB_bottomPanel.png */; };
@@ -865,6 +866,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		37AD8EDD1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CCParticleSystem+NodeInfo.m"; sourceTree = "<group>"; };
+		37AD8EDE1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCParticleSystem+NodeInfo.h"; sourceTree = "<group>"; };
 		5811305E1639BF1200A86D70 /* SequencerTimelineDrawDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequencerTimelineDrawDelegate.h; sourceTree = "<group>"; };
 		5811305F1639C52000A86D70 /* seq-startmarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-startmarker.png"; sourceTree = "<group>"; };
 		581BCFE6162DADE7007DE600 /* CCBSplitHorizontalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBSplitHorizontalView.h; sourceTree = "<group>"; };
@@ -3009,6 +3012,8 @@
 		E335CB071577C55F00A612EE /* Node info */ = {
 			isa = PBXGroup;
 			children = (
+				37AD8EDD1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.m */,
+				37AD8EDE1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.h */,
 				E3B4223014E5CF96004547D6 /* NodeInfo.h */,
 				E3B4223114E5CF97004547D6 /* NodeInfo.m */,
 				E335CB081577C5FB00A612EE /* CCNode+NodeInfo.h */,
@@ -5315,6 +5320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E398C03B14FB8F850078E771 /* CCBXCocos2diPhone.m in Sources */,
+				37AD8EDF1E9618C000EE5BCB /* CCParticleSystem+NodeInfo.m in Sources */,
 				E3F2C21314FC157E007B660D /* CCBXCocos2diPhoneWriter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

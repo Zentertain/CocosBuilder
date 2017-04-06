@@ -45,6 +45,18 @@
 			<key>extra</key>
 			<string>resetSystem|stopSystem</string>
 		</dict>
+        <dict>
+            <key>animatable</key>
+            <true/>
+            <key>defaultSerialization</key>
+            <true/>
+            <key>type</key>
+            <string>Check</string>
+            <key>name</key>
+            <string>particleActive</string>
+            <key>displayName</key>
+            <string>ParticleActive</string>
+        </dict>
 		<dict>
 			<key>displayName</key>
 			<string>Mode</string>

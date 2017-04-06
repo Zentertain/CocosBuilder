@@ -55,6 +55,7 @@
 
 - (id) valueForProperty:(NSString*)name atTime:(float)time sequenceId:(int)seqId;
 - (void) updatePropertiesTime:(float)time sequenceId:(int)seqId;
+- (void) updateProperty:(NSString*) propName time:(float)time sequenceId:(int)seqId;
 
 - (void) deleteSequenceId:(int) seqId;
 
