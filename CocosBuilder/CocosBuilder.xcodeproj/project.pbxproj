@@ -345,7 +345,6 @@
 		37AD90A01E97592100EE5BCB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7789ABCB133AA82000CEFCC7 /* InfoPlist.strings */; };
 		37AD90A11E97592100EE5BCB /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 7789ABD1133AA82000CEFCC7 /* Credits.rtf */; };
 		37AD90A21E97592100EE5BCB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7789ABD7133AA82000CEFCC7 /* MainMenu.xib */; };
-		37AD90A31E97592100EE5BCB /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7789ACED133AB6A700CEFCC7 /* icon.icns */; };
 		37AD90A41E97592100EE5BCB /* header-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 7789ACF0133BD5E800CEFCC7 /* header-bg.png */; };
 		37AD90A51E97592100EE5BCB /* missing-texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 772BE566133E40D60009B5B9 /* missing-texture.png */; };
 		37AD90A61E97592100EE5BCB /* NewDocWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 772BE57B134398EE0009B5B9 /* NewDocWindow.xib */; };
@@ -647,7 +646,6 @@
 		7789ABEC133AB12000CEFCC7 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7789ABEB133AB12000CEFCC7 /* OpenGL.framework */; };
 		7789ABEE133AB12F00CEFCC7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7789ABED133AB12F00CEFCC7 /* libz.dylib */; };
 		7789ACEA133AB47A00CEFCC7 /* CocosScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 7789ACE9133AB47A00CEFCC7 /* CocosScene.m */; };
-		7789ACEF133AB6A700CEFCC7 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7789ACED133AB6A700CEFCC7 /* icon.icns */; };
 		7789ACF1133BD5E800CEFCC7 /* header-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 7789ACF0133BD5E800CEFCC7 /* header-bg.png */; };
 		77AC50231360A05400B04360 /* CocosBuilderIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 77AC50221360A05300B04360 /* CocosBuilderIcon.png */; };
 		77AC50251360A0FB00B04360 /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 77AC50241360A0FB00B04360 /* Icon.icns */; };
@@ -5334,7 +5332,6 @@
 				37AD90A01E97592100EE5BCB /* InfoPlist.strings in Resources */,
 				37AD90A11E97592100EE5BCB /* Credits.rtf in Resources */,
 				37AD90A21E97592100EE5BCB /* MainMenu.xib in Resources */,
-				37AD90A31E97592100EE5BCB /* icon.icns in Resources */,
 				37AD90A41E97592100EE5BCB /* header-bg.png in Resources */,
 				37AD90A51E97592100EE5BCB /* missing-texture.png in Resources */,
 				37AD90A61E97592100EE5BCB /* NewDocWindow.xib in Resources */,
@@ -5573,7 +5570,6 @@
 				7789ABCD133AA82000CEFCC7 /* InfoPlist.strings in Resources */,
 				7789ABD3133AA82000CEFCC7 /* Credits.rtf in Resources */,
 				7789ABD9133AA82000CEFCC7 /* MainMenu.xib in Resources */,
-				7789ACEF133AB6A700CEFCC7 /* icon.icns in Resources */,
 				7789ACF1133BD5E800CEFCC7 /* header-bg.png in Resources */,
 				772BE567133E40D60009B5B9 /* missing-texture.png in Resources */,
 				772BE57C134398EE0009B5B9 /* NewDocWindow.xib in Resources */,
