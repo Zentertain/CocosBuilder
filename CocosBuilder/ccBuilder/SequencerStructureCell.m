@@ -28,6 +28,7 @@
 #import "PlugInNode.h"
 #import "SequencerHandler.h"
 #import "SequencerSequence.h"
+#import "NodeInfo.h"
 
 @implementation SequencerStructureCell
 
@@ -38,15 +39,27 @@
     if (!imagesLoaded)
     {
         imgRowBgChannel = [[NSImage imageNamed:@"seq-row-channel-bg.png"] retain];
+        imgRowBgRed = [[NSImage imageNamed:@"seq-row-channel-bg-red.png"] retain];
         imagesLoaded = YES;
     }
     
     if (!node)
     {
-        NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, cellFrame.size.width+16, kCCBSeqDefaultRowHeight);
+        NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, cellFrame.size.width, kCCBSeqDefaultRowHeight);
         [imgRowBgChannel drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
         [super drawWithFrame:cellFrame inView:controlView];
         return;
+    } else {
+        NodeInfo* info = node.userObject;
+        if (info) {
+            NSDictionary* extraProps = info.extraProps;
+            if (![[extraProps objectForKey:@"memberVarAssignmentName"] isEqualToString:@""] ||
+                ![[extraProps objectForKey:@"memberVarAssignmentType"] isEqualToNumber:@0]
+                ) {
+                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, cellFrame.size.width, kCCBSeqDefaultRowHeight);
+                [imgRowBgRed drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
+            }
+        }
     }
     
     // Only draw property names if cell is expanded

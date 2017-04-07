@@ -276,6 +276,12 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+#ifdef VAR_EDITABLE
+    varEditable = YES;
+#else
+    varEditable = NO;
+#endif
+    
     [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:YES] forKey:@"ApplePersistenceIgnoreState"];
     [self.window center];
     
@@ -357,6 +363,17 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
         // First run completed
         [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:YES] forKey:@"completedFirstRun"];
     }
+    
+    // Load version file into version text field
+    NSString* versionPath = [[NSBundle mainBundle] pathForResource:@"Version" ofType:@"txt" inDirectory:@"version"];
+    
+    NSString* version = [NSString stringWithContentsOfFile:versionPath encoding:NSUTF8StringEncoding error:NULL];
+    
+    if (version)
+    {
+        [window setTitle:[NSString stringWithFormat:@"CocosBuilder  %@", version]];
+    }
+    
 }
 
 #pragma mark Notifications to user
@@ -929,7 +946,6 @@ static BOOL hideAllToNextSeparator;
     [dict setObject:[NSNumber numberWithInt:kCCBFileFormatVersion] forKey:@"fileVersion"];
     
     [dict setObject:[NSNumber numberWithBool:jsControlled] forKey:@"jsControlled"];
-    [dict setObject:[NSNumber numberWithBool:varEditable] forKey:@"varEditable"];
     
     [dict setObject:[NSNumber numberWithBool:[[CocosScene cocosScene] centeredOrigin]] forKey:@"centeredOrigin"];
     
@@ -995,7 +1011,6 @@ static BOOL hideAllToNextSeparator;
     
     // Check for jsControlled
     jsControlled = [[doc objectForKey:@"jsControlled"] boolValue];
-    varEditable = [[doc objectForKey:@"varEditable"] boolValue];
     
     // Setup stage & resolutions
     NSMutableArray* serializedResolutions = [doc objectForKey:@"resolutions"];
@@ -1930,7 +1945,7 @@ static BOOL hideAllToNextSeparator;
     [clipDict setObject: emptyStr forKey: varAssignmentKey];
     [clipDict setObject: emptyStr forKey: jsControllerKey];
     [clipDict setObject: [NSNumber numberWithFloat: 0] forKey: varAssignmentTypeKey];
-    [clipDict setObject: [NSString stringWithCString: "Mask"] forKey: [NSString stringWithCString: "DPSMask"]];
+    [clipDict setObject: @"Mask" forKey: @"DPSMask"];
     
     for (NSMutableDictionary* clipDictChild in [clipDict objectForKey:@"children"])
     {
@@ -2063,8 +2078,8 @@ static BOOL hideAllToNextSeparator;
 
 - (BOOL) canDelete: (NSMutableDictionary*)delDict
 {
-    [delDict setObject: [NSString stringWithCString: "Mask"] forKey: [NSString stringWithCString: "DPSMaskDel"]];
-    if (![[delDict objectForKey: @"memberVarAssignmentName"] isEqualToString: [NSString stringWithCString: ""]])
+    [delDict setObject:@"Mask" forKey: @"DPSMaskDel"];
+    if (![[delDict objectForKey: @"memberVarAssignmentName"] isEqualToString: @""])
          return false;
     if (![[delDict objectForKey: @"memberVarAssignmentType"] isEqualToNumber: [NSNumber numberWithInt: 0]])
     {
@@ -2089,11 +2104,13 @@ static BOOL hideAllToNextSeparator;
     if ([sequenceHandler deleteSelectedKeyframesForCurrentSequence]) return;
     
     // Then delete the selected node
-    NSMutableDictionary* delDict = [CCBWriterInternal dictionaryFromCCObject:self.selectedNode];
-    if (![self canDelete:delDict])
-    {
-        return;
+    NodeInfo* info = self.selectedNode.userObject;
+    if (info) {
+        if (![self canDelete:info.extraProps]){
+            return;
+        }
     }
+    
     NSArray* nodesToDelete = [NSArray arrayWithArray:self.selectedNodes];
     for (CCNode* node in nodesToDelete)
     {
@@ -3623,8 +3640,6 @@ static BOOL hideAllToNextSeparator;
 
 - (IBAction)menuVarEditable:(id)sender
 {
-    [self saveUndoStateWillChangeProperty:@"*varEditable"];
-    
     varEditable = !varEditable;
     [self updateVarEditableMenu];
     [self updateInspectorFromSelection];

@@ -31,6 +31,7 @@
     
     BOOL imagesLoaded;
     NSImage* imgRowBgChannel;
+    NSImage* imgRowBgRed;
 }
 
 @property (nonatomic,assign) CCNode* node;

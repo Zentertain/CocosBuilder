@@ -17,15 +17,17 @@ touch version/Version.txt
 cd CocosBuilder/
 xcodebuild -alltargets clean
 xcodebuild -target CocosBuilder -configuration Debug build
-
+xcodebuild -target CocosBuilder-Artist -configuration Debug build
 # Create archives
 cd ..
 # mkdir "build/CocosBuilder-$CCB_VERSION-examples"
-mkdir "build/CocosBuilder-$CCB_VERSION-CCBReader"
+# mkdir "build/CocosBuilder-$CCB_VERSION-CCBReader"
 # cp -RL "Examples" "build/CocosBuilder-$CCB_VERSION-examples/"
-cp -RL "Examples/CocosBuilderExample/libs/CCBReader" "build/CocosBuilder-$CCB_VERSION-CCBReader/"
+# cp -RL "Examples/CocosBuilderExample/libs/CCBReader" "build/CocosBuilder-$CCB_VERSION-CCBReader/"
 
 cd build/
-zip -r "CocosBuilder-$CCB_VERSION.zip" CocosBuilder.app
+zip -rm "CocosBuilder-$CCB_VERSION.zip" CocosBuilder.app
+zip -rm "CocosBuilder-Artist-$CCB_VERSION.zip" CocosBuilder-Artist.app
+
 # zip -r "CocosBuilder-$CCB_VERSION-examples.zip" "CocosBuilder-$CCB_VERSION-examples"
-zip -r "CocosBuilder-$CCB_VERSION-CCBReader.zip" "CocosBuilder-$CCB_VERSION-CCBReader"
+# zip -r "CocosBuilder-$CCB_VERSION-CCBReader.zip" "CocosBuilder-$CCB_VERSION-CCBReader"
