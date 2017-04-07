@@ -181,6 +181,20 @@
 
 #pragma mark Writer
 
++ (NSMutableArray*) arrayFromCCObjects: (NSArray*)arr{
+    if (!arr) {
+        return nil;
+    }
+    NSMutableArray* result = [NSMutableArray arrayWithCapacity:[arr count]];
+    for (CCNode *node in arr) {
+        if (![node isKindOfClass:[CCNode class]]) {
+            return nil;
+        }
+        [result addObject:[CCBWriterInternal dictionaryFromCCObject:node]];
+    }
+    return result;
+}
+
 + (NSMutableDictionary*) dictionaryFromCCObject:(CCNode *)node
 {
     NodeInfo* info = node.userObject;

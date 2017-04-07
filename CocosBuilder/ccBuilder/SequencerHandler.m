@@ -400,17 +400,19 @@ static SequencerHandler* sharedSequencerHandler;
     
     CCBGlobals* g = [CCBGlobals globals];
     
-    id item = [items objectAtIndex:0];
+    NSMutableArray* clipArr = [NSMutableArray arrayWithCapacity:[items count]];
     
-    if (![item isKindOfClass:[CCNode class]]) return NO;
+    for (id item in items) {
+        if (![item isKindOfClass:[CCNode class]]) return NO;
+        CCNode* draggedNode = item;
+        if (draggedNode == g.rootNode) return NO;
+        
+        NSMutableDictionary* clipDict = [CCBWriterInternal dictionaryFromCCObject:draggedNode];
+        [clipDict setObject:[NSNumber numberWithLongLong:(long long)draggedNode] forKey:@"srcNode"];
+        [clipArr addObject:clipDict];
+    }
     
-    CCNode* draggedNode = item;
-    if (draggedNode == g.rootNode) return NO;
-    
-    NSMutableDictionary* clipDict = [CCBWriterInternal dictionaryFromCCObject:draggedNode];
-    
-    [clipDict setObject:[NSNumber numberWithLongLong:(long long)draggedNode] forKey:@"srcNode"];
-    NSData* clipData = [NSKeyedArchiver archivedDataWithRootObject:clipDict];
+    NSData* clipData = [NSKeyedArchiver archivedDataWithRootObject:clipArr];
     
     [pboard setData:clipData forType:@"com.cocosbuilder.node"];
     
@@ -429,17 +431,17 @@ static SequencerHandler* sharedSequencerHandler;
     NSData* nodeData = [pb dataForType:@"com.cocosbuilder.node"];
     if (nodeData)
     {
-        NSDictionary* clipDict = [NSKeyedUnarchiver unarchiveObjectWithData:nodeData];
-        CCNode* draggedNode = (CCNode*)[[clipDict objectForKey:@"srcNode"] longLongValue];
-        
-        CCNode* node = item;
-        CCNode* parent = [node parent];
-        while (parent && parent != g.rootNode)
-        {
-            if (parent == draggedNode) return NSDragOperationNone;
-            parent = [parent parent];
+        NSArray* clipArr = [NSKeyedUnarchiver unarchiveObjectWithData:nodeData];
+        for (NSDictionary* clipDict in clipArr) {
+            CCNode* draggedNode = (CCNode*)[[clipDict objectForKey:@"srcNode"] longLongValue];
+            CCNode* node = item;
+            CCNode* parent = [node parent];
+            while (parent && parent != g.rootNode)
+            {
+                if (parent == draggedNode) return NSDragOperationNone;
+                parent = [parent parent];
+            }
         }
-        
         return NSDragOperationGeneric;
     }
     
@@ -453,16 +455,20 @@ static SequencerHandler* sharedSequencerHandler;
     NSData* clipData = [pb dataForType:@"com.cocosbuilder.node"];
     if (clipData)
     {
-        NSMutableDictionary* clipDict = [NSKeyedUnarchiver unarchiveObjectWithData:clipData];
+        NSArray* clipArr = [NSKeyedUnarchiver unarchiveObjectWithData:clipData];
+        NSMutableArray* selectedNodes = [NSMutableArray arrayWithCapacity:[clipArr count]];
         
-        CCNode* clipNode= [CCBReaderInternal nodeGraphFromDictionary:clipDict parentSize:CGSizeZero];
-        if (![appDelegate addCCObject:clipNode toParent:item atIndex:index]) return NO;
+        for (NSDictionary* clipDict in clipArr) {
+            CCNode* clipNode= [CCBReaderInternal nodeGraphFromDictionary:clipDict parentSize:CGSizeZero];
+            if (![appDelegate addCCObject:clipNode toParent:item atIndex:index]) return NO;
+            
+            // Remove old node
+            CCNode* draggedNode = (CCNode*)[[clipDict objectForKey:@"srcNode"] longLongValue];
+            [appDelegate deleteNode:draggedNode];
+            [selectedNodes addObject:clipNode];
+        }
         
-        // Remove old node
-        CCNode* draggedNode = (CCNode*)[[clipDict objectForKey:@"srcNode"] longLongValue];
-        [appDelegate deleteNode:draggedNode];
-        
-        [appDelegate setSelectedNodes:[NSArray arrayWithObject: clipNode]];
+        [appDelegate setSelectedNodes:selectedNodes];
         
         [PositionPropertySetter refreshAllPositions];
         

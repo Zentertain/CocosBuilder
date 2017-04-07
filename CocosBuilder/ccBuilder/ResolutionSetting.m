@@ -124,8 +124,8 @@
     ResolutionSetting* setting = [self settingIPhone];
     
     setting.name = @"iPhone Landscape";
-    setting.width = 480;
-    setting.height = 320;
+    setting.width = 960;
+    setting.height = 640;
     
     return setting;
 }
@@ -135,8 +135,8 @@
     ResolutionSetting* setting = [self settingIPhone];
     
     setting.name = @"iPhone Portrait";
-    setting.width = 320;
-    setting.height = 480;
+    setting.width = 640;
+    setting.height = 960;
     
     return setting;
 }
@@ -146,8 +146,8 @@
     ResolutionSetting* setting = [self settingIPhone];
     
     setting.name = @"iPhone 5 Landscape";
-    setting.width = 568;
-    setting.height = 320;
+    setting.width = 1136;
+    setting.height = 640;
     
     return setting;
 }
@@ -157,8 +157,8 @@
     ResolutionSetting* setting = [self settingIPhone];
     
     setting.name = @"iPhone 5 Portrait";
-    setting.width = 320;
-    setting.height = 568;
+    setting.width = 640;
+    setting.height = 1136;
     
     return setting;
 }

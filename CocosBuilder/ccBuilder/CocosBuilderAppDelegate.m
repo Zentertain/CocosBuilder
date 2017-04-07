@@ -295,10 +295,10 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     [[NSExceptionHandler defaultExceptionHandler] setExceptionHandlingMask: NSLogUncaughtExceptionMask | NSLogUncaughtSystemExceptionMask | NSLogUncaughtRuntimeErrorMask];
     
     // iOS
-    defaultCanvasSizes[kCCBCanvasSizeIPhoneLandscape] = CGSizeMake(480, 320);
-    defaultCanvasSizes[kCCBCanvasSizeIPhonePortrait] = CGSizeMake(320, 480);
-    defaultCanvasSizes[kCCBCanvasSizeIPhone5Landscape] = CGSizeMake(568, 320);
-    defaultCanvasSizes[kCCBCanvasSizeIPhone5Portrait] = CGSizeMake(320, 568);
+    defaultCanvasSizes[kCCBCanvasSizeIPhoneLandscape] = CGSizeMake(960, 640);
+    defaultCanvasSizes[kCCBCanvasSizeIPhonePortrait] = CGSizeMake(640, 960);
+    defaultCanvasSizes[kCCBCanvasSizeIPhone5Landscape] = CGSizeMake(1136, 640);
+    defaultCanvasSizes[kCCBCanvasSizeIPhone5Portrait] = CGSizeMake(640, 1136);
     defaultCanvasSizes[kCCBCanvasSizeIPadLandscape] = CGSizeMake(1024, 768);
     defaultCanvasSizes[kCCBCanvasSizeIPadPortrait] = CGSizeMake(768, 1024);
     
@@ -369,9 +369,12 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     
     NSString* version = [NSString stringWithContentsOfFile:versionPath encoding:NSUTF8StringEncoding error:NULL];
     
-    if (version)
-    {
+    if (version) {
+#ifdef VAR_EDITABLE
         [window setTitle:[NSString stringWithFormat:@"CocosBuilder  %@", version]];
+#else
+        [window setTitle:[NSString stringWithFormat:@"CocosBuilder-Artist  %@", version]];
+#endif
     }
     
 }
@@ -1920,14 +1923,16 @@ static BOOL hideAllToNextSeparator;
         return;
     }
     
-    // Copy node
-    if (!self.selectedNode) return;
     
     // Serialize selected node
-    NSMutableDictionary* clipDict = [CCBWriterInternal dictionaryFromCCObject:self.selectedNode];
-    [self resetParasByCopy: clipDict];
-    
-    NSData* clipData = [NSKeyedArchiver archivedDataWithRootObject:clipDict];
+    NSMutableArray* clipArr = [CCBWriterInternal arrayFromCCObjects:self.selectedNodes];
+    if (!clipArr) {
+        return;
+    }
+    for (NSMutableDictionary *dict in clipArr) {
+        [self resetParasByCopy: dict];
+    }
+    NSData* clipData = [NSKeyedArchiver archivedDataWithRootObject:clipArr];
     NSPasteboard* cb = [NSPasteboard generalPasteboard];
     
     [cb declareTypes:[NSArray arrayWithObjects:@"com.cocosbuilder.node", nil] owner:self];
@@ -1966,14 +1971,16 @@ static BOOL hideAllToNextSeparator;
     if (type)
     {
         NSData* clipData = [cb dataForType:type];
-        NSMutableDictionary* clipDict = [NSKeyedUnarchiver unarchiveObjectWithData:clipData];
+        NSMutableArray* clipArr = [NSKeyedUnarchiver unarchiveObjectWithData:clipData];
         
         CGSize parentSize;
         if (asChild) parentSize = self.selectedNode.contentSize;
         else parentSize = self.selectedNode.parent.contentSize;
         
-        CCNode* clipNode = [CCBReaderInternal nodeGraphFromDictionary:clipDict parentSize:parentSize];
-        [self addCCObject:clipNode asChild:asChild];
+        for (NSMutableDictionary* dict in clipArr) {
+            CCNode* clipNode = [CCBReaderInternal nodeGraphFromDictionary:dict parentSize:parentSize];
+            [self addCCObject:clipNode asChild:asChild];
+        }
     }
 }
 
