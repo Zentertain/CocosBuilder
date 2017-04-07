@@ -163,7 +163,6 @@
 
 - (BOOL) isEditable
 {
-    NSLog(@"isEditable (ImageAndTextCell)");
     return YES;
 }
 
