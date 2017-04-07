@@ -360,7 +360,7 @@ enum {
 
 // For warning messages
 - (void) modalDialogTitle: (NSString*)title message:(NSString*)msg;
-
+- (BOOL) isVarEditable;
 // Modal status messages (progress)
 - (void) modalStatusWindowStartWithTitle:(NSString*)title;
 - (void) modalStatusWindowFinish;

@@ -30,5 +30,5 @@
 @property (nonatomic,assign) NSString* memberVarAssignmentName;
 @property (nonatomic,assign) int memberVarAssignmentType;
 @property (nonatomic,assign) NSString* jsController;
-
+@property (nonatomic,assign) BOOL canEdit;
 @end

@@ -363,10 +363,14 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
         // First run completed
         [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:YES] forKey:@"completedFirstRun"];
     }
+    [self setupVersionStr];
+    [window setTitle:titleStr];
     
+}
+
+- (void)setupVersionStr{
     // Load version file into version text field
     NSString* versionPath = [[NSBundle mainBundle] pathForResource:@"short" ofType:@"txt" inDirectory:@"version"];
-    
     NSString* version = [NSString stringWithContentsOfFile:versionPath encoding:NSUTF8StringEncoding error:NULL];
     if (!version) {
         version = @"unknown";
@@ -376,8 +380,6 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
 #else
     titleStr = [NSString stringWithFormat:@"CocosBuilder Artist v%@", version];
 #endif
-    [window setTitle:titleStr];
-    
 }
 
 #pragma mark Notifications to user
@@ -1595,7 +1597,9 @@ static BOOL hideAllToNextSeparator;
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames
 {
-	// if resManager isn't initialized wait for it to initialize before opening assets.	
+    [self setupVersionStr];
+
+	// if resManager isn't initialized wait for it to initialize before opening assets.
 	if(!resManager)
 	{
 		NSAssert( delayOpenFiles == NULL, @"This shouldn't be set to anything since this value will only get applied once.");
@@ -1953,18 +1957,12 @@ static BOOL hideAllToNextSeparator;
     [clipDict setObject: emptyStr forKey: varAssignmentKey];
     [clipDict setObject: emptyStr forKey: jsControllerKey];
     [clipDict setObject: [NSNumber numberWithFloat: 0] forKey: varAssignmentTypeKey];
-    [clipDict setObject: @"Mask" forKey: @"DPSMask"];
     
-    for (NSMutableDictionary* clipDictChild in [clipDict objectForKey:@"children"])
-    {
-        if ([clipDictChild objectForKey:@"DPSMask"])
-            continue;
+    for (NSMutableDictionary* clipDictChild in [clipDict objectForKey:@"children"]){
         [self resetParasByCopy: clipDictChild];
     }
     return;
 }
-
-
 
 - (void) doPasteAsChild:(BOOL)asChild
 {
@@ -2086,11 +2084,17 @@ static BOOL hideAllToNextSeparator;
     [sequenceHandler updateOutlineViewSelection];
 }
 
-- (BOOL) canDelete: (NSMutableDictionary*)delDict
+- (BOOL) canDelete: (CCNode*)root
 {
-    [delDict setObject:@"Mask" forKey: @"DPSMaskDel"];
+    NodeInfo* info = root.userObject;
+    if (!info) {
+        return true;
+    }
+    id delDict = info.extraProps;
+    
     if (![[delDict objectForKey: @"memberVarAssignmentName"] isEqualToString: @""])
          return false;
+    
     if (![[delDict objectForKey: @"memberVarAssignmentType"] isEqualToNumber: [NSNumber numberWithInt: 0]])
     {
         return false;
@@ -2099,11 +2103,8 @@ static BOOL hideAllToNextSeparator;
     {
         return false;
     }
-    for (NSMutableDictionary* delDictChild in [delDict objectForKey:@"children"])
-    {
-        if ([delDictChild objectForKey:@"DPSMask"])
-            continue;
-        if (![self canDelete: delDictChild])
+    for (CCNode* child in [root children]) {
+        if (![self canDelete: child])
             return false;
     }
     return true;
@@ -2113,12 +2114,8 @@ static BOOL hideAllToNextSeparator;
     // First attempt to delete selected keyframes
     if ([sequenceHandler deleteSelectedKeyframesForCurrentSequence]) return;
     
-    // Then delete the selected node
-    NodeInfo* info = self.selectedNode.userObject;
-    if (info) {
-        if (![self canDelete:info.extraProps]){
-            return;
-        }
+    if (![self canDelete:self.selectedNode]){
+        return;
     }
     
     NSArray* nodesToDelete = [NSArray arrayWithArray:self.selectedNodes];
@@ -2743,7 +2740,7 @@ static BOOL hideAllToNextSeparator;
 
 
 
-- (int) isVarEditable
+- (BOOL) isVarEditable
 {
     return varEditable;
 }

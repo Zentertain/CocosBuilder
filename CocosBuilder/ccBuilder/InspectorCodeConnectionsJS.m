@@ -55,6 +55,10 @@
     [[CocosBuilderAppDelegate appDelegate] performSelectorOnMainThread:@selector(updateInspectorFromSelection) withObject:NULL waitUntilDone:NO];
 }
 
+-(BOOL)canEdit{
+    return [[CocosBuilderAppDelegate appDelegate] isVarEditable];
+}
+
 - (NSString*) customClass
 {
     return [selection extraPropForKey:@"customClass"];
@@ -62,8 +66,6 @@
 
 - (void) setJsController:(NSString *)jsController
 {
-    if (![[CocosBuilderAppDelegate appDelegate] isVarEditable])
-        return;
     [[CocosBuilderAppDelegate appDelegate] saveUndoStateWillChangeProperty:@"jsController"];
     
     if (!jsController) jsController = @"";
@@ -79,8 +81,6 @@
 
 - (void) setMemberVarAssignmentName:(NSString *)memberVarAssignmentName
 {
-    if (![[CocosBuilderAppDelegate appDelegate] isVarEditable])
-        return;
     [[CocosBuilderAppDelegate appDelegate] saveUndoStateWillChangeProperty:@"memberVarAssignmentName"];
     
     if (!memberVarAssignmentName) memberVarAssignmentName = @"";
@@ -94,8 +94,6 @@
 
 - (void) setMemberVarAssignmentType:(int)memberVarAssignmentType
 {
-    if (![[CocosBuilderAppDelegate appDelegate] isVarEditable])
-        return;
     [[CocosBuilderAppDelegate appDelegate] saveUndoStateWillChangeProperty:@"memberVarAssignmentType"];
     
     [selection setExtraProp:[NSNumber numberWithInt: memberVarAssignmentType] forKey:@"memberVarAssignmentType"];
