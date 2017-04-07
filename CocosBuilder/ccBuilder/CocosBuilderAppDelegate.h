@@ -234,7 +234,7 @@ enum {
     // JavaScript bindings
     BOOL jsControlled;
     BOOL varEditable;
-    
+    NSString *titleStr;
 @private
     MainWindow *window;
     

@@ -365,17 +365,18 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     }
     
     // Load version file into version text field
-    NSString* versionPath = [[NSBundle mainBundle] pathForResource:@"Version" ofType:@"txt" inDirectory:@"version"];
+    NSString* versionPath = [[NSBundle mainBundle] pathForResource:@"short" ofType:@"txt" inDirectory:@"version"];
     
     NSString* version = [NSString stringWithContentsOfFile:versionPath encoding:NSUTF8StringEncoding error:NULL];
-    
-    if (version) {
-#ifdef VAR_EDITABLE
-        [window setTitle:[NSString stringWithFormat:@"CocosBuilder  %@", version]];
-#else
-        [window setTitle:[NSString stringWithFormat:@"CocosBuilder-Artist  %@", version]];
-#endif
+    if (!version) {
+        version = @"unknown";
     }
+#ifdef VAR_EDITABLE
+    titleStr = [NSString stringWithFormat:@"CocosBuilder v%@", version];
+#else
+    titleStr = [NSString stringWithFormat:@"CocosBuilder Artist v%@", version];
+#endif
+    [window setTitle:titleStr];
     
 }
 
@@ -1307,7 +1308,7 @@ static BOOL hideAllToNextSeparator;
     
     [[JavaScriptAutoCompleteHandler sharedAutoCompleteHandler] removeLocalFiles];
     
-    [window setTitle:@"CocosBuilder"];
+    [window setTitle:titleStr];
 
     // Stop local web server
     [[CCBHTTPServer sharedHTTPServer] stop];
@@ -1356,7 +1357,7 @@ static BOOL hideAllToNextSeparator;
     }
     
     // Update the title of the main window
-    [window setTitle:[NSString stringWithFormat:@"CocosBuilder - %@", [fileName lastPathComponent]]];
+    [window setTitle:[NSString stringWithFormat:@"%@", [fileName lastPathComponent]]];
 
     // Start local web server
     NSString* docRoot = [projectSettings.publishDirectoryHTML5 absolutePathFromBaseDirPath:[projectSettings.projectPath stringByDeletingLastPathComponent]];
