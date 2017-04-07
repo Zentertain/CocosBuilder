@@ -1650,11 +1650,13 @@ static BOOL hideAllToNextSeparator;
 - (void) saveUndoStateWillChangeProperty:(NSString*)prop
 {
     if (!currentDocument) return;
-    
-//    if (prop && [currentDocument.lastEditedProperty isEqualToString:prop])
-//    {
-//        return;
-//    }
+    if (prop &&
+        [currentDocument.lastEditedProperty isEqualToString:prop] &&
+        ![prop isEqualToString:@"*addkeyframe"]
+        )
+    {
+        return;
+    }
     
     NSMutableDictionary* doc = [self docDataFromCurrentNodeGraph];
     
