@@ -435,9 +435,9 @@
         return YES;
     }
 
-    //Publish Layout in json
-    NSString* layoutPath = [dstFile stringByReplacingOccurrencesOfString:@".ccbi" withString:@".json"];
-    [self publishJson:doc path:layoutPath src:srcFile];
+//    //Publish Layout in json
+//    NSString* layoutPath = [dstFile stringByReplacingOccurrencesOfString:@".ccbi" withString:@".json"];
+//    [self publishJson:doc path:layoutPath src:srcFile];
     
     // Export file
     plugIn.flattenPaths = projectSettings.flattenPaths;
