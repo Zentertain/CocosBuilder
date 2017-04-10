@@ -2086,6 +2086,9 @@ static BOOL hideAllToNextSeparator;
 
 - (BOOL) canDelete: (CCNode*)root
 {
+    if (varEditable) {
+        return YES;
+    }
     NodeInfo* info = root.userObject;
     if (!info) {
         return true;
