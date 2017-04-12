@@ -1302,12 +1302,13 @@ CA
                                     <popUpButton verticalHuggingPriority="750" id="1573">
                                         <rect key="frame" x="-3" y="83" width="256" height="15"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="smallSquare" title="Timelines" bezelStyle="smallSquare" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" transparent="YES" inset="2" pullsDown="YES" selectedItem="1580" id="1574">
+                                        <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" transparent="YES" inset="2" pullsDown="YES" id="1574">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" title="OtherViews" id="1575">
                                                 <items>
-                                                    <menuItem title="Timelines" hidden="YES" id="1580">
+                                                    <menuItem isSeparatorItem="YES" hidden="YES" id="1583"/>
+                                                    <menuItem title="Timelines" id="1580">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                         <menu key="submenu" title="Timelines" id="1581">
                                                             <items>
@@ -1317,7 +1318,6 @@ CA
                                                             </items>
                                                         </menu>
                                                     </menuItem>
-                                                    <menuItem isSeparatorItem="YES" id="1583"/>
                                                     <menuItem title="Edit Timelines..." id="1577">
                                                         <connections>
                                                             <action selector="menuTimelineSettings:" target="494" id="1589"/>

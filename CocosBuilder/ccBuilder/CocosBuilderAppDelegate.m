@@ -1094,7 +1094,7 @@ static BOOL hideAllToNextSeparator;
         NSMutableArray* sequences = [NSMutableArray array];
     
         SequencerSequence* seq = [[SequencerSequence alloc] init];
-        seq.name = @"Default Timeline";
+        seq.name = @"DefaultTimeline";
         seq.sequenceId = 0;
         seq.autoPlay = YES;
         [sequences addObject:seq];
@@ -1531,7 +1531,7 @@ static BOOL hideAllToNextSeparator;
     NSMutableArray* sequences = [NSMutableArray array];
     
     SequencerSequence* seq = [[[SequencerSequence alloc] init] autorelease];
-    seq.name = @"Default Timeline";
+    seq.name = @"DefaultTimeline";
     seq.sequenceId = 0;
     seq.autoPlay = YES;
     [sequences addObject:seq];
