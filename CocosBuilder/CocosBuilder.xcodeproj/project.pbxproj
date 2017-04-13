@@ -590,6 +590,8 @@
 		37AD91981E97592100EE5BCB /* CCLayer.ccbPlugNode in Copy PlugIns */ = {isa = PBXBuildFile; fileRef = E35DBB6814F21E7D0070A6E4 /* CCLayer.ccbPlugNode */; };
 		37AD91991E97592100EE5BCB /* CCSprite.ccbPlugNode in Copy PlugIns */ = {isa = PBXBuildFile; fileRef = E3C365EB14E9E4D1007CD5FF /* CCSprite.ccbPlugNode */; };
 		37AD919A1E97592100EE5BCB /* CCNode.ccbPlugNode in Copy PlugIns */ = {isa = PBXBuildFile; fileRef = E3B7AEC514E3193500DFD402 /* CCNode.ccbPlugNode */; };
+		37F99CAD1E9F33FC009DB690 /* seq-row-channel-bg-yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */; };
+		37F99CAE1E9F33FC009DB690 /* seq-row-channel-bg-yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */; };
 		581130601639C52500A86D70 /* seq-startmarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 5811305F1639C52000A86D70 /* seq-startmarker.png */; };
 		581BCFE8162DADE7007DE600 /* CCBSplitHorizontalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 581BCFE7162DADE7007DE600 /* CCBSplitHorizontalView.m */; };
 		58FA2034162D73F3006B8856 /* TB_bottomPanel.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA2031162D73F3006B8856 /* TB_bottomPanel.png */; };
@@ -1619,6 +1621,7 @@
 		37AD8F281E9751C300EE5BCB /* seq-row-channel-bg-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-row-channel-bg-red.png"; sourceTree = "<group>"; };
 		37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder-Artist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		37AD91A11E97592100EE5BCB /* CocosBuilder-Artist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CocosBuilder-Artist-Info.plist"; path = "/Users/Plus/Code/CocosBuilder/CocosBuilder/CocosBuilder-Artist-Info.plist"; sourceTree = "<absolute>"; };
+		37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-row-channel-bg-yellow.png"; sourceTree = "<group>"; };
 		5811305E1639BF1200A86D70 /* SequencerTimelineDrawDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequencerTimelineDrawDelegate.h; sourceTree = "<group>"; };
 		5811305F1639C52000A86D70 /* seq-startmarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-startmarker.png"; sourceTree = "<group>"; };
 		581BCFE6162DADE7007DE600 /* CCBSplitHorizontalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBSplitHorizontalView.h; sourceTree = "<group>"; };
@@ -3104,6 +3107,7 @@
 		776041F01498FD630078095D /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */,
 				E37FCAEC175D2704009F81D6 /* ui-cogs.png */,
 				E37FCAED175D2704009F81D6 /* ui-cogs@2x.png */,
 				E39C917A174C134C00092BD1 /* toolbar-btn-add.png */,
@@ -5427,6 +5431,7 @@
 				37AD91001E97592100EE5BCB /* notes-close-down.png in Resources */,
 				37AD91011E97592100EE5BCB /* position-0.png in Resources */,
 				37AD91021E97592100EE5BCB /* position-1.png in Resources */,
+				37F99CAD1E9F33FC009DB690 /* seq-row-channel-bg-yellow.png in Resources */,
 				37AD91031E97592100EE5BCB /* position-2.png in Resources */,
 				37AD91041E97592100EE5BCB /* position-3.png in Resources */,
 				37AD91051E97592100EE5BCB /* position-4.png in Resources */,
@@ -5665,6 +5670,7 @@
 				E3F3F84B153DBA43005443EE /* notes-close-down.png in Resources */,
 				E35A2D8D1540111A00F78B72 /* position-0.png in Resources */,
 				E35A2D8E1540111A00F78B72 /* position-1.png in Resources */,
+				37F99CAE1E9F33FC009DB690 /* seq-row-channel-bg-yellow.png in Resources */,
 				E35A2D8F1540111A00F78B72 /* position-2.png in Resources */,
 				E35A2D901540111A00F78B72 /* position-3.png in Resources */,
 				E35A2D911540111A00F78B72 /* position-4.png in Resources */,

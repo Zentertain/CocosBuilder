@@ -2102,10 +2102,10 @@ static BOOL hideAllToNextSeparator;
     {
         return false;
     }
-    if ([delDict objectForKey: @"jsController"])
-    {
-        return false;
-    }
+//    if ([delDict objectForKey: @"jsController"])
+//    {
+//        return false;
+//    }
     for (CCNode* child in [root children]) {
         if (![self canDelete: child])
             return false;

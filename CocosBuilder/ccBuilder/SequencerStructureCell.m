@@ -40,6 +40,7 @@
     {
         imgRowBgChannel = [[NSImage imageNamed:@"seq-row-channel-bg.png"] retain];
         imgRowBgRed = [[NSImage imageNamed:@"seq-row-channel-bg-red.png"] retain];
+        imgRowBgYellow = [[NSImage imageNamed:@"seq-row-channel-bg-yellow.png"] retain];
         imagesLoaded = YES;
     }
     
@@ -53,10 +54,16 @@
         NodeInfo* info = node.userObject;
         if (info) {
             NSDictionary* extraProps = info.extraProps;
+            if ([extraProps objectForKey:@"ccControl"] != nil && ![[extraProps objectForKey:@"ccControl"] isEqualToString:@""]) {
+                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, kCCBSeqDefaultRowHeight, kCCBSeqDefaultRowHeight);
+                [imgRowBgYellow drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
+                self.title = [NSString stringWithFormat:@"Button - %@", [extraProps objectForKey:@"ccControl"]];
+            }
+
             if (![[extraProps objectForKey:@"memberVarAssignmentName"] isEqualToString:@""] ||
                 ![[extraProps objectForKey:@"memberVarAssignmentType"] isEqualToNumber:@0]
                 ) {
-                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, cellFrame.size.width, kCCBSeqDefaultRowHeight);
+                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, kCCBSeqDefaultRowHeight, kCCBSeqDefaultRowHeight);
                 [imgRowBgRed drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
             }
         }
