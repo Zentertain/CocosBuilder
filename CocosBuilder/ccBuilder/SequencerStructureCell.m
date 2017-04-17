@@ -55,15 +55,15 @@
         if (info) {
             NSDictionary* extraProps = info.extraProps;
             if ([extraProps objectForKey:@"ccControl"] != nil && ![[extraProps objectForKey:@"ccControl"] isEqualToString:@""]) {
-                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, kCCBSeqDefaultRowHeight, kCCBSeqDefaultRowHeight);
-                [imgRowBgYellow drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
+//                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, kCCBSeqDefaultRowHeight, kCCBSeqDefaultRowHeight);
+//                [imgRowBgYellow drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
                 self.title = [NSString stringWithFormat:@"Button - %@", [extraProps objectForKey:@"ccControl"]];
             }
 
             if (![[extraProps objectForKey:@"memberVarAssignmentName"] isEqualToString:@""] ||
                 ![[extraProps objectForKey:@"memberVarAssignmentType"] isEqualToNumber:@0]
                 ) {
-                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, kCCBSeqDefaultRowHeight, kCCBSeqDefaultRowHeight);
+                NSRect rowRect = NSMakeRect(0, /*cellFrame.origin.x,*/ cellFrame.origin.y, 300, kCCBSeqDefaultRowHeight);
                 [imgRowBgRed drawInRect:rowRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
             }
         }
