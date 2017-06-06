@@ -100,7 +100,6 @@
 
 
 @implementation CocosBuilderAppDelegate
-
 @synthesize window;
 @synthesize projectSettings;
 @synthesize currentDocument;
@@ -2813,6 +2812,59 @@ static BOOL hideAllToNextSeparator;
     zoom *= 1/1.2f;
     if (zoom < 0.125) zoom = 0.125f;
     [cs setStageZoom:zoom];
+}
+
+- (void) renameKey:(NSMutableDictionary*)dictionary from:(id<NSCopying>)oldKey to:(id<NSCopying>)newKey{
+    NSObject *object = [dictionary objectForKey:oldKey];
+    if (!object) {
+        return;
+    }
+    [object retain];
+    [dictionary removeObjectForKey:oldKey];
+    [dictionary setObject:object forKey:newKey];
+    [object release];
+}
+
+- (IBAction)menuExportAnim:(id)sender {
+    if (!selectedNodes || selectedNodes.count != 1){
+        [self modalDialogTitle:@"Export failed" message:@"必须选中一个节点来导出动画."];
+        return;
+    }
+    CCNode* node = [selectedNodes objectAtIndex:0];
+    id animDict = [node serializeAnimatedProperties];
+    
+    
+    NodeInfo* info = node.userObject;
+    NSMutableDictionary* animatableProps = info.animatableProperties;
+    for (SequencerSequence* seq in currentDocument.sequences) {
+        [self renameKey:animDict from:[NSString stringWithFormat:@"%d", [seq sequenceId]] to:[seq name]];
+    }
+    
+    NSError *error = nil;
+    id anim = [NSJSONSerialization dataWithJSONObject:animDict options:0 error:&error];
+    if (error) {
+        NSString* msg = [NSString stringWithFormat:@"%@", error];
+        [self modalDialogTitle:@"Export failed" message:msg];
+    }
+    
+    NSSavePanel * savePanel = [NSSavePanel savePanel];
+    // Restrict the file type to whatever you like
+    [savePanel setAllowedFileTypes:@[@"json"]];
+    // Set the starting directory
+//    [savePanel setDirectoryURL:someURL];
+    // Perform other setup
+    // Use a completion handler -- this is a block which takes one argument
+    // which corresponds to the button that was clicked
+    [savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result){
+        if (result == NSFileHandlingPanelOKButton) {
+            // Close panel before handling errors
+            [savePanel orderOut:self];
+            
+            id url = [savePanel URL];
+            [anim writeToURL:url atomically:NO];
+            // Do what you need to do with the selected path
+        }
+    }];
 }
 
 - (IBAction) menuResetView:(id)sender

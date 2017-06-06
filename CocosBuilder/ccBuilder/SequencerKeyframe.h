@@ -72,6 +72,7 @@ enum
 
 - (id) initWithSerialization:(id)ser;
 - (id) serialization;
+- (id) toJSON:(float) lastFrameTime;
 
 + (int) keyframeTypeFromPropertyType:(NSString*)type;
 

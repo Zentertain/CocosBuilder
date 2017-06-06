@@ -68,6 +68,7 @@
 - (BOOL) hasKeyframesForProperty:(NSString*) prop;
 
 - (id) serializeAnimatedProperties;
+
 - (void) loadAnimatedPropertiesFromSerialization:(id)ser;
 
 - (NSString*) customPropertyNamed:(NSString*)name;

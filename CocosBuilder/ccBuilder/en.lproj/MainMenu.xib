@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -844,17 +844,18 @@ CA
                                     <action selector="menuAddStickyNote:" target="494" id="1465"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Zsw-Eg-eLc"/>
+                            <menuItem title="Var Editable" id="twn-5W-lum">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuVarEditable:" target="494" id="P2N-9g-NM7"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="1780"/>
                             <menuItem title="JavaScript Controlled" id="1782">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuJavaScriptControlled:" target="494" id="1784"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Var Editable" id="twn-5W-lum">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="menuVarEditable:" target="494" id="P2N-9g-NM7"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -876,6 +877,12 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="playbackStop:" target="494" id="1725"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Export" id="fDo-Us-kXW">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuExportAnim:" target="494" id="kuQ-O7-RWN"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="1741"/>
@@ -1138,7 +1145,7 @@ CA
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <clipView key="contentView" copiesOnScroll="NO" id="eSV-77-Z3r">
                                                     <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" autosaveColumns="NO" rowHeight="16" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="1502" id="1499" customClass="ResourceManagerOutlineView">
                                                             <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
@@ -1370,7 +1377,7 @@ CA
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" copiesOnScroll="NO" id="jtV-hz-C3i">
                                             <rect key="frame" x="0.0" y="0.0" width="601" height="66"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" autosaveColumns="NO" rowHeight="14" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="571" id="570" customClass="SequencerOutlineView">
                                                     <rect key="frame" x="0.0" y="0.0" width="601" height="66"/>
@@ -1582,7 +1589,7 @@ CA
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                 <clipView key="contentView" copiesOnScroll="NO" id="PYw-em-loo">
                                     <rect key="frame" x="1" y="1" width="298" height="678"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <view id="608" userLabel="View">
                                             <rect key="frame" x="0.0" y="0.0" width="233" height="550"/>

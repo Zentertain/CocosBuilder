@@ -238,6 +238,7 @@ enum {
 @private
     MainWindow *window;
     
+    NSMenuItem *menuExportAction;
 }
 
 @property (assign) IBOutlet MainWindow *window;
@@ -328,6 +329,7 @@ enum {
 - (IBAction) menuSetCanvasBorder:(id)sender;
 - (IBAction) menuZoomIn:(id)sender;
 - (IBAction) menuZoomOut:(id)sender;
+- (IBAction)menuExportAnim:(id)sender;
 
 - (IBAction)menuCreateSmartSpriteSheet:(id)sender;
 - (IBAction)menuEditSmartSpriteSheet:(id)sender;
