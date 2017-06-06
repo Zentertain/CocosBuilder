@@ -2833,12 +2833,26 @@ static BOOL hideAllToNextSeparator;
     CCNode* node = [selectedNodes objectAtIndex:0];
     id animDict = [node serializeAnimatedProperties];
     
-    
-    NodeInfo* info = node.userObject;
-    NSMutableDictionary* animatableProps = info.animatableProperties;
     for (SequencerSequence* seq in currentDocument.sequences) {
         [self renameKey:animDict from:[NSString stringWithFormat:@"%d", [seq sequenceId]] to:[seq name]];
     }
+    
+    NodeInfo* info = node.userObject;
+    PlugInNode* plugIn = info.plugIn;
+    NSMutableArray* plugInProps = plugIn.nodeProperties;
+    int plugInPropsCount = [plugInProps count];
+    
+    NSMutableDictionary *baseValueDict = [NSMutableDictionary dictionary];
+    for (int i = 0; i < plugInPropsCount; i++) {
+        NSMutableDictionary* propInfo = [plugInProps objectAtIndex:i];
+        NSString* name = [propInfo objectForKey:@"name"];
+        id baseValue = [node baseValueForProperty:name];
+        if (baseValue) {
+            [baseValueDict setObject:baseValue forKey:name];
+        }
+    }
+    
+    [animDict setObject:baseValueDict forKey:@"baseValue"];
     
     NSError *error = nil;
     id anim = [NSJSONSerialization dataWithJSONObject:animDict options:0 error:&error];
