@@ -2851,7 +2851,8 @@ static BOOL hideAllToNextSeparator;
             [baseValueDict setObject:baseValue forKey:name];
         }
     }
-    
+    int posType = [PositionPropertySetter positionTypeForNode:node prop:@"position"];
+    [baseValueDict setObject:[NSNumber numberWithInt:posType] forKey:@"positionType"];
     [animDict setObject:baseValueDict forKey:@"baseValue"];
     
     NSError *error = nil;
