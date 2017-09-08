@@ -26,7 +26,7 @@
 #import "SCEvents.h"
 #import "SCEvent.h"
 
-#define kCCBMaxTrackedDirectories 200
+#define kCCBMaxTrackedDirectories 2000
 
 enum
 {
