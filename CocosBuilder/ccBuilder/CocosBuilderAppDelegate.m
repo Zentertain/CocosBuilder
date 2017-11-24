@@ -374,11 +374,15 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     if (!version) {
         version = @"unknown";
     }
-#ifdef VAR_EDITABLE
-    titleStr = [[NSString stringWithFormat:@"CocosBuilder v%@", version] retain];
-#else
-    titleStr = [[NSString stringWithFormat:@"CocosBuilder Artist v%@", version] retain];
+    titleStr = @"CocosBuilder";
+#ifdef VAR_PLUGINS
+    titleStr = [titleStr stringByAppendingString:@"(Plugins)"];
 #endif
+#ifndef VAR_EDITABLE
+    titleStr = [titleStr stringByAppendingString:@" Artist"];
+#endif
+    titleStr = [titleStr stringByAppendingFormat:@" v%@", version];
+    [titleStr retain];
 }
 
 #pragma mark Notifications to user
