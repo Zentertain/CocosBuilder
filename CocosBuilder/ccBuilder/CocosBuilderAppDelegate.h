@@ -368,4 +368,6 @@ enum {
 - (void) modalStatusWindowFinish;
 - (void) modalStatusWindowUpdateStatusText:(NSString*) text;
 
+- (void) runShellForIndex:(NSInteger) index;
+
 @end

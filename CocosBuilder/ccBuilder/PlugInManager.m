@@ -58,6 +58,7 @@
 #endif
     
     plugInsExporters = [[NSMutableArray alloc] init];
+    plugInsShells = [[NSMutableArray alloc] init];
     
     return self;
 }
@@ -240,6 +241,60 @@
         }
     }
     return NULL;
+}
+
+- (NSString*) getShellNameForPath: (NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\w]*title[^\\n\\r\\w]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (match) {
+        NSRange nameRange = [match rangeAtIndex:1];
+        return [[file substringWithRange:nameRange] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    } else {
+        return [[path lastPathComponent] stringByDeletingPathExtension];
+    }
+}
+
+- (NSArray*) plugInsShellDisplayNamesForProject:(NSString*) projectPath
+{
+    [plugInsShells removeAllObjects];
+    
+    NSMutableString* sourcePath = [NSMutableString stringWithString:[projectPath stringByDeletingLastPathComponent]];
+    
+    id block = ^(id obj, NSUInteger idx, BOOL *stop)
+    {
+        NSString *filename = (NSString *)obj;
+        NSString *extension = [[filename pathExtension] lowercaseString];
+        if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"app"])
+        {
+            [plugInsShells addObject:[sourcePath stringByAppendingPathComponent:filename]];
+        }
+    };
+    //do {
+        NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:sourcePath error:NULL];
+        dirs = [dirs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            return [obj1 compare:obj2];
+        }];
+        [dirs enumerateObjectsUsingBlock:block];
+        //if ([[sourcePath lastPathComponent] hasSuffix:@"Resource"]) break;
+        //[sourcePath setString:[sourcePath stringByDeletingLastPathComponent]];
+    //} while(![sourcePath isEqualToString:@"/"]);
+    
+    NSMutableArray* arr = [NSMutableArray array];
+    for (int i = 0; i < [plugInsShells count]; i++)
+    {
+        NSString* path = [plugInsShells objectAtIndex:i];
+        NSString* name = [self getShellNameForPath: path];
+        [arr addObject:name];
+    }
+    return arr;
+}
+
+- (NSString*) plugInShellForIndex:(int)idx
+{
+    return [plugInsShells objectAtIndex:idx];
 }
 
 @end

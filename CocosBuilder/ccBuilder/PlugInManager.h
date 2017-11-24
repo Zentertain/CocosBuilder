@@ -37,6 +37,7 @@
 #endif
 	
     NSMutableArray* plugInsExporters;
+    NSMutableArray* plugInsShells;
 }
 
 #if !CCB_BUILDING_COMMANDLINE
@@ -59,4 +60,9 @@
 - (NSArray*) plugInsExportNames;
 - (PlugInExport*) plugInExportForIndex:(int)idx;
 - (PlugInExport*) plugInExportForExtension:(NSString*)ext;
+
+// Plug-in shell
+- (NSArray*) plugInsShellDisplayNamesForProject:(NSString*) projectPath;
+- (NSString*) plugInShellForIndex:(int)idx;
+
 @end

@@ -375,9 +375,9 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
         version = @"unknown";
     }
 #ifdef VAR_EDITABLE
-    titleStr = [NSString stringWithFormat:@"CocosBuilder v%@", version];
+    titleStr = [[NSString stringWithFormat:@"CocosBuilder v%@", version] retain];
 #else
-    titleStr = [NSString stringWithFormat:@"CocosBuilder Artist v%@", version];
+    titleStr = [[NSString stringWithFormat:@"CocosBuilder Artist v%@", version] retain];
 #endif
 }
 
@@ -1317,6 +1317,7 @@ static BOOL hideAllToNextSeparator;
     // Remove resource paths
     self.projectSettings = NULL;
     [resManager removeAllDirectories];
+    [toolbarDelegate refreshShellPlugInItemsToToolbar:toolbar];
 }
 
 - (BOOL) openProject:(NSString*) fileName
@@ -1391,6 +1392,8 @@ static BOOL hideAllToNextSeparator;
             [self openFile:[resPath stringByAppendingPathComponent:ccbFile]];
         }
     }
+    
+    [toolbarDelegate refreshShellPlugInItemsToToolbar:toolbar];
     
     return YES;
 }
@@ -3973,6 +3976,101 @@ static BOOL hideAllToNextSeparator;
     [toolbarDelegate release];
     
     [super dealloc];
+}
+
+#pragma mark PlugInShell
+
+- (NSArray*) getSelectedPaths
+{
+    NSOutlineView* tree = [self outlineProject];
+    NSMutableArray* selectedPaths = [NSMutableArray arrayWithCapacity:[tree numberOfSelectedRows]];
+    if ([tree numberOfSelectedRows] > 0)
+    {
+        NSIndexSet* selectedIndexSet = [tree selectedRowIndexes];
+        for (NSUInteger currentIndex = [selectedIndexSet firstIndex];
+             currentIndex != NSNotFound;
+             currentIndex = [selectedIndexSet indexGreaterThanIndex: currentIndex]) {
+            id item = [tree itemAtRow:currentIndex];
+            if ([item isKindOfClass:[RMResource class]])
+            {
+                RMResource* itemObj = item;
+                [selectedPaths addObject:[itemObj filePath]];
+            }
+            else if ([item isKindOfClass:[RMSpriteFrame class]])
+            {
+                RMSpriteFrame* itemObj = item;
+                [selectedPaths addObject:[itemObj spriteSheetFile]];
+            }
+            else if ([item isKindOfClass:[RMAnimation class]])
+            {
+                RMAnimation* itemObj = item;
+                [selectedPaths addObject:[itemObj animationFile]];
+            }
+            else if ([item isKindOfClass:[RMDirectory class]])
+            {
+                RMDirectory* itemObj = item;
+                [selectedPaths addObject:[itemObj dirPath]];
+            }
+        }
+    }
+    return selectedPaths;
+}
+
+- (NSString*) getTopDirName:(NSString*) path
+{
+    NSString* topDirName;
+    do {
+        topDirName = [[path lastPathComponent] stringByDeletingPathExtension];
+        path = [path stringByDeletingLastPathComponent];
+    }
+    while (![path hasSuffix:@"Resource"] && ![path isEqualToString:@"/"]);
+    return topDirName;
+}
+
+- (void) runShellForIndex:(NSInteger) index
+{
+    NSString* dirName = [[self projectSettings] projectPath];
+    if (dirName == NULL) return;
+    NSString* projectName = [[dirName lastPathComponent] stringByDeletingPathExtension];
+    dirName = [self getTopDirName:dirName];
+    NSString* shell = [plugInManager plugInShellForIndex:index];
+    
+    // run app with Window
+    NSString* shellName = [shell lastPathComponent];
+    if ([[shellName pathExtension] isEqualToString:@"app"]) {
+        NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
+                                    [NSString stringWithFormat:
+                                     @"tell application \"%@\" to activate", shell]] autorelease];
+        [terminal executeAndReturnError:nil];
+        return;
+    }
+    
+    // run shell with Terminal
+    NSString* folderPath = [shell stringByDeletingLastPathComponent];
+    NSMutableString* appleScript = [NSMutableString stringWithFormat:
+                                    @"tell application \"Terminal\"\n"
+                                    @"    activate\n"
+                                    @"    set win to do script \"cd %@\"\n", folderPath];
+    
+    NSString* currentDocumentPath = [[self currentDocument] fileName];
+    if (!currentDocumentPath) currentDocumentPath = @"";
+    [appleScript appendFormat:@"    do script \"export currentDocumentPath=%@\" in win\n", currentDocumentPath];
+    
+    NSString* currentProjectPath = [[self projectSettings] projectPath];
+    if (!currentProjectPath) currentProjectPath = @"";
+    [appleScript appendFormat:@"    do script \"export currentProjectPath=%@\" in win\n", currentProjectPath];
+    
+    NSArray* selectedPaths = [self getSelectedPaths];
+    [appleScript appendFormat:@"    do script \"export selectedPathsCount=%d\" in win\n", (int)[selectedPaths count]];
+    for (int i = 1; i <= [selectedPaths count]; ++i) {
+        [appleScript appendFormat:@"    do script \"export selectedPaths%d=%@\" in win\n", i, [selectedPaths objectAtIndex:i]];
+    }
+    
+    NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
+                                [NSString stringWithFormat:
+                                 @"%@    do script \"clear && ./%@ %@ %@\" in win\n"
+                                 @"end tell", appleScript, shellName, dirName, projectName]] autorelease];
+    [terminal executeAndReturnError:nil];
 }
 
 @end
