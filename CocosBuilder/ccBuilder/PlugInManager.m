@@ -261,13 +261,17 @@
 {
     [plugInsShells removeAllObjects];
     
-    NSMutableString* sourcePath = [NSMutableString stringWithString:[projectPath stringByDeletingLastPathComponent]];
+    NSMutableString* sourcePath = [NSMutableString stringWithString:[[projectPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"PlugIns"]];
+    BOOL isDirectory = NO;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:sourcePath isDirectory:&isDirectory] || !isDirectory) {
+        return [NSArray array];
+    }
     
     id block = ^(id obj, NSUInteger idx, BOOL *stop)
     {
         NSString *filename = (NSString *)obj;
         NSString *extension = [[filename pathExtension] lowercaseString];
-        if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"app"])
+        if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"])
         {
             [plugInsShells addObject:[sourcePath stringByAppendingPathComponent:filename]];
         }

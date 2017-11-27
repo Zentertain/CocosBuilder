@@ -376,7 +376,7 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     }
     titleStr = @"CocosBuilder";
 #ifdef VAR_PLUGINS
-    titleStr = [titleStr stringByAppendingString:@"(Plugins)"];
+    titleStr = [titleStr stringByAppendingString:@"(PlugIns)"];
 #endif
 #ifndef VAR_EDITABLE
     titleStr = [titleStr stringByAppendingString:@" Artist"];
@@ -3984,97 +3984,153 @@ static BOOL hideAllToNextSeparator;
 
 #pragma mark PlugInShell
 
-- (NSArray*) getSelectedPaths
+- (NSString*) getSelectedPath
 {
     NSOutlineView* tree = [self outlineProject];
-    NSMutableArray* selectedPaths = [NSMutableArray arrayWithCapacity:[tree numberOfSelectedRows]];
-    if ([tree numberOfSelectedRows] > 0)
-    {
-        NSIndexSet* selectedIndexSet = [tree selectedRowIndexes];
-        for (NSUInteger currentIndex = [selectedIndexSet firstIndex];
-             currentIndex != NSNotFound;
-             currentIndex = [selectedIndexSet indexGreaterThanIndex: currentIndex]) {
-            id item = [tree itemAtRow:currentIndex];
-            if ([item isKindOfClass:[RMResource class]])
-            {
-                RMResource* itemObj = item;
-                [selectedPaths addObject:[itemObj filePath]];
-            }
-            else if ([item isKindOfClass:[RMSpriteFrame class]])
-            {
-                RMSpriteFrame* itemObj = item;
-                [selectedPaths addObject:[itemObj spriteSheetFile]];
-            }
-            else if ([item isKindOfClass:[RMAnimation class]])
-            {
-                RMAnimation* itemObj = item;
-                [selectedPaths addObject:[itemObj animationFile]];
-            }
-            else if ([item isKindOfClass:[RMDirectory class]])
-            {
-                RMDirectory* itemObj = item;
-                [selectedPaths addObject:[itemObj dirPath]];
-            }
-        }
+    if ([tree numberOfSelectedRows] == 0) {
+        return @"";
     }
-    return selectedPaths;
+    NSUInteger row = [tree selectedRow];
+    id item = [tree itemAtRow:row];
+    if ([item isKindOfClass:[RMResource class]]) {
+        return [item filePath];
+    } else if ([item isKindOfClass:[RMSpriteFrame class]]) {
+        return [item spriteSheetFile];
+    } else if ([item isKindOfClass:[RMAnimation class]]) {
+        return [item animationFile];
+    } else if ([item isKindOfClass:[RMDirectory class]]) {
+        return [item dirPath];
+    } else {
+        return @"";
+    }
 }
 
 - (NSString*) getTopDirName:(NSString*) path
 {
     NSString* topDirName;
+    NSString* dirName = [[path stringByDeletingLastPathComponent] lastPathComponent];
     do {
         topDirName = [[path lastPathComponent] stringByDeletingPathExtension];
         path = [path stringByDeletingLastPathComponent];
     }
     while (![path hasSuffix:@"Resource"] && ![path isEqualToString:@"/"]);
+    if ([path isEqualToString:@"/"]) {
+        return dirName;
+    }
     return topDirName;
+}
+
+- (NSArray*) getParamsForPath: (NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*params[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    
+    NSArray* params;
+    if (!match) {
+        params = [NSArray arrayWithObjects:@"resourcename", @"projectname", nil];
+    } else {
+        NSRange range = [match rangeAtIndex:1];
+        file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+        file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
+        params = [[file lowercaseString] componentsSeparatedByString:@" "];
+    }
+    
+    NSMutableArray* paramValues = [NSMutableArray arrayWithCapacity:[params count]];
+    for (NSString* param in params) {
+        NSString* paramValue = param;
+        if ([param isEqualToString:@"projectname"]) {
+            paramValue = [[[[self projectSettings] projectPath] lastPathComponent] stringByDeletingPathExtension];
+        } else if ([param isEqualToString:@"resourcename"]) {
+            paramValue = [self getTopDirName:[[self projectSettings] projectPath]];
+        } else if ([param isEqualToString:@"projectdir"]) {
+            paramValue = [[self projectSettings] projectPath];
+        } else if ([param isEqualToString:@"selectedpath"]) {
+            paramValue = [self getSelectedPath];
+        } else if ([param isEqualToString:@"currentpath"]) {
+            paramValue = [[self currentDocument] fileName];
+            if (!paramValue) paramValue = @"";
+        }
+        [paramValues addObject:paramValue];
+    }
+    return paramValues;
+}
+
+- (NSSet*) getOptionsForPath:(NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*options[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (!match) {
+        return [NSSet set];
+    }
+    NSRange range = [match rangeAtIndex:1];
+    file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+    file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
+    NSArray* params = [[file lowercaseString] componentsSeparatedByString:@" "];
+    return [NSSet setWithArray:params];
+}
+
+- (NSString*) getWorkingDirForPath:(NSString*) path
+{
+    NSString* dir = [path stringByDeletingLastPathComponent];
+    if ([[dir lastPathComponent] isEqualToString:@"PlugIns"]) {
+        return [dir stringByDeletingLastPathComponent];
+    }
+    return dir;
+}
+
+- (NSSet*) getExtensionFiltersForPath:(NSString*) path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*filters[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (!match) {
+        return [NSSet set];
+    }
+    NSRange range = [match rangeAtIndex:1];
+    file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+    file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
+    NSArray* params = [[file lowercaseString] componentsSeparatedByString:@" "];
+    return [NSSet setWithArray:params];
 }
 
 - (void) runShellForIndex:(NSInteger) index
 {
-    NSString* dirName = [[self projectSettings] projectPath];
-    if (dirName == NULL) return;
-    NSString* projectName = [[dirName lastPathComponent] stringByDeletingPathExtension];
-    dirName = [self getTopDirName:dirName];
-    NSString* shell = [plugInManager plugInShellForIndex:index];
-    
-    // run app with Window
-    NSString* shellName = [shell lastPathComponent];
-    if ([[shellName pathExtension] isEqualToString:@"app"]) {
-        NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
-                                    [NSString stringWithFormat:
-                                     @"tell application \"%@\" to activate", shell]] autorelease];
-        [terminal executeAndReturnError:nil];
-        return;
-    }
+    NSString* projectPath = [[self projectSettings] projectPath];
+    if (projectPath == nil) return;
+    NSString* shellPath = [plugInManager plugInShellForIndex:index];
+    NSString* workingDir = [self getWorkingDirForPath:shellPath];
     
     // run shell with Terminal
-    NSString* folderPath = [shell stringByDeletingLastPathComponent];
-    NSMutableString* appleScript = [NSMutableString stringWithFormat:
-                                    @"tell application \"Terminal\"\n"
-                                    @"    activate\n"
-                                    @"    set win to do script \"cd %@\"\n", folderPath];
-    
-    NSString* currentDocumentPath = [[self currentDocument] fileName];
-    if (!currentDocumentPath) currentDocumentPath = @"";
-    [appleScript appendFormat:@"    do script \"export currentDocumentPath=%@\" in win\n", currentDocumentPath];
-    
-    NSString* currentProjectPath = [[self projectSettings] projectPath];
-    if (!currentProjectPath) currentProjectPath = @"";
-    [appleScript appendFormat:@"    do script \"export currentProjectPath=%@\" in win\n", currentProjectPath];
-    
-    NSArray* selectedPaths = [self getSelectedPaths];
-    [appleScript appendFormat:@"    do script \"export selectedPathsCount=%d\" in win\n", (int)[selectedPaths count]];
-    for (int i = 1; i <= [selectedPaths count]; ++i) {
-        [appleScript appendFormat:@"    do script \"export selectedPaths%d=%@\" in win\n", i, [selectedPaths objectAtIndex:i]];
+    NSSet* options = [self getOptionsForPath:shellPath];
+    NSArray* params = [self getParamsForPath:shellPath];
+    if ([options containsObject:@"hide"])
+    {
+        NSTask* task = [[[NSTask alloc] init] autorelease];
+        [task setLaunchPath:shellPath];
+        [task setCurrentDirectoryPath:workingDir];
+        [task setArguments:params];
+        [task launch];
     }
-    
-    NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
-                                [NSString stringWithFormat:
-                                 @"%@    do script \"clear && ./%@ %@ %@\" in win\n"
-                                 @"end tell", appleScript, shellName, dirName, projectName]] autorelease];
-    [terminal executeAndReturnError:nil];
+    else
+    {
+        NSString* paramsString = [params componentsJoinedByString:@"\\\" \\\""];
+        NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
+                                    [NSString stringWithFormat:
+                                     @"tell application \"Terminal\"\n"
+                                     @"    activate\n"
+                                     @"    set win to do script \"cd \\\"%@\\\"\"\n"
+                                     @"    do script \"./PlugIns/%@ \\\"%@\\\"\" in win\n"
+                                     @"end tell", workingDir, [shellPath lastPathComponent], paramsString]] autorelease];
+        [terminal executeAndReturnError:nil];
+    }
 }
 
 @end

@@ -3120,9 +3120,9 @@
 		37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder-Artist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		37AD91A11E97592100EE5BCB /* CocosBuilder-Artist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CocosBuilder-Artist-Info.plist"; path = "/Users/Plus/Code/CocosBuilder/CocosBuilder/CocosBuilder-Artist-Info.plist"; sourceTree = "<absolute>"; };
 		37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-row-channel-bg-yellow.png"; sourceTree = "<group>"; };
-		43AE383B1FC7D4AC007D1A7F /* CocosBuilder(Plugins).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder(Plugins).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43AE383B1FC7D4AC007D1A7F /* CocosBuilder(PlugIns).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder(PlugIns).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		43AE383E1FC7D4AD007D1A7F /* CocosBuilder(Plugins)-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CocosBuilder(Plugins)-Info.plist"; path = "/Users/xingze.he/Documents/Project/CocosBuilder/CocosBuilder/ccBuilder/CocosBuilder(Plugins)-Info.plist"; sourceTree = "<absolute>"; };
-		43AE3AB21FC7D4D6007D1A7F /* CocosBuilder(Plugins)-Artist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder(Plugins)-Artist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43AE3AB21FC7D4D6007D1A7F /* CocosBuilder(PlugIns)-Artist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder(PlugIns)-Artist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		43AE3AB31FC7D4D7007D1A7F /* CocosBuilder(Plugins)-Artist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CocosBuilder(Plugins)-Artist-Info.plist"; path = "/Users/xingze.he/Documents/Project/CocosBuilder/CocosBuilder/ccBuilder/CocosBuilder(Plugins)-Artist-Info.plist"; sourceTree = "<absolute>"; };
 		43AE3AB71FC7F342007D1A7F /* Icon(PlugIns).icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "Icon(PlugIns).icns"; sourceTree = SOURCE_ROOT; };
 		5811305E1639BF1200A86D70 /* SequencerTimelineDrawDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequencerTimelineDrawDelegate.h; sourceTree = "<group>"; };
@@ -4791,8 +4791,8 @@
 				E3FCE8661524856D0028E8E7 /* CCScrollView.ccbPlugNode */,
 				FA98CFC1154E7D1C006E58C5 /* ccbpublish */,
 				37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */,
-				43AE383B1FC7D4AC007D1A7F /* CocosBuilder(Plugins).app */,
-				43AE3AB21FC7D4D6007D1A7F /* CocosBuilder(Plugins)-Artist.app */,
+				43AE383B1FC7D4AC007D1A7F /* CocosBuilder(PlugIns).app */,
+				43AE3AB21FC7D4D6007D1A7F /* CocosBuilder(PlugIns)-Artist.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -6485,9 +6485,9 @@
 			productReference = 37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */;
 			productType = "com.apple.product-type.application";
 		};
-		43AE35C81FC7D4AC007D1A7F /* CocosBuilder(Plugins) */ = {
+		43AE35C81FC7D4AC007D1A7F /* CocosBuilder(PlugIns) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 43AE38381FC7D4AC007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(Plugins)" */;
+			buildConfigurationList = 43AE38381FC7D4AC007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(PlugIns)" */;
 			buildPhases = (
 				43AE35EB1FC7D4AC007D1A7F /* Sources */,
 				43AE37261FC7D4AC007D1A7F /* Frameworks */,
@@ -6518,14 +6518,14 @@
 				43AE35E71FC7D4AC007D1A7F /* PBXTargetDependency */,
 				43AE35E91FC7D4AC007D1A7F /* PBXTargetDependency */,
 			);
-			name = "CocosBuilder(Plugins)";
+			name = "CocosBuilder(PlugIns)";
 			productName = ccBuilder;
-			productReference = 43AE383B1FC7D4AC007D1A7F /* CocosBuilder(Plugins).app */;
+			productReference = 43AE383B1FC7D4AC007D1A7F /* CocosBuilder(PlugIns).app */;
 			productType = "com.apple.product-type.application";
 		};
-		43AE383F1FC7D4D6007D1A7F /* CocosBuilder(Plugins)-Artist */ = {
+		43AE383F1FC7D4D6007D1A7F /* CocosBuilder(PlugIns)-Artist */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 43AE3AAF1FC7D4D6007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(Plugins)-Artist" */;
+			buildConfigurationList = 43AE3AAF1FC7D4D6007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(PlugIns)-Artist" */;
 			buildPhases = (
 				43AE38621FC7D4D6007D1A7F /* Sources */,
 				43AE399D1FC7D4D6007D1A7F /* Frameworks */,
@@ -6556,9 +6556,9 @@
 				43AE385E1FC7D4D6007D1A7F /* PBXTargetDependency */,
 				43AE38601FC7D4D6007D1A7F /* PBXTargetDependency */,
 			);
-			name = "CocosBuilder(Plugins)-Artist";
+			name = "CocosBuilder(PlugIns)-Artist";
 			productName = ccBuilder;
-			productReference = 43AE3AB21FC7D4D6007D1A7F /* CocosBuilder(Plugins)-Artist.app */;
+			productReference = 43AE3AB21FC7D4D6007D1A7F /* CocosBuilder(PlugIns)-Artist.app */;
 			productType = "com.apple.product-type.application";
 		};
 		7789ABBD133AA82000CEFCC7 /* CocosBuilder */ = {
@@ -6933,8 +6933,8 @@
 				7789ABBD133AA82000CEFCC7 /* CocosBuilder */,
 				37AD8F2D1E97592100EE5BCB /* CocosBuilder-Artist */,
 				FA98CFC0154E7D1C006E58C5 /* ccbpublish */,
-				43AE35C81FC7D4AC007D1A7F /* CocosBuilder(Plugins) */,
-				43AE383F1FC7D4D6007D1A7F /* CocosBuilder(Plugins)-Artist */,
+				43AE35C81FC7D4AC007D1A7F /* CocosBuilder(PlugIns) */,
+				43AE383F1FC7D4D6007D1A7F /* CocosBuilder(PlugIns)-Artist */,
 			);
 		};
 /* End PBXProject section */
@@ -10168,7 +10168,7 @@
 					"\"$(SRCROOT)/libs/Tupac\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zenjoy.CocosBuilder-Plugins";
+				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -10207,7 +10207,7 @@
 					"\"$(SRCROOT)/libs/Tupac\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zenjoy.CocosBuilder-Plugins";
+				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -10245,7 +10245,7 @@
 					"\"$(SRCROOT)/libs/Tupac\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zenjoy.CocosBuilder-Plugins";
+				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -10283,7 +10283,7 @@
 					"\"$(SRCROOT)/libs/Tupac\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zenjoy.CocosBuilder-Plugins";
+				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -11265,7 +11265,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		43AE38381FC7D4AC007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(Plugins)" */ = {
+		43AE38381FC7D4AC007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(PlugIns)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				43AE38391FC7D4AC007D1A7F /* Debug */,
@@ -11274,7 +11274,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		43AE3AAF1FC7D4D6007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(Plugins)-Artist" */ = {
+		43AE3AAF1FC7D4D6007D1A7F /* Build configuration list for PBXNativeTarget "CocosBuilder(PlugIns)-Artist" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				43AE3AB01FC7D4D6007D1A7F /* Debug */,
