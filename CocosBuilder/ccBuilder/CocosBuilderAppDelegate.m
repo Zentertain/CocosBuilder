@@ -1291,6 +1291,7 @@ static BOOL hideAllToNextSeparator;
     // Remove resource paths
     self.projectSettings = NULL;
     [resManager removeAllDirectories];
+    [toolbarDelegate refreshShellPlugInItemsToToolbar:toolbar];
 }
 
 - (BOOL) openProject:(NSString*) fileName
@@ -1365,6 +1366,8 @@ static BOOL hideAllToNextSeparator;
             [self openFile:[resPath stringByAppendingPathComponent:ccbFile]];
         }
     }
+    
+    [toolbarDelegate refreshShellPlugInItemsToToolbar:toolbar];
     
     return YES;
 }
@@ -3787,6 +3790,25 @@ static BOOL hideAllToNextSeparator;
     [toolbarDelegate release];
     
     [super dealloc];
+}
+
+#pragma mark PlugInShell
+
+- (void) runShellForIndex:(NSInteger) index
+{
+    NSString* shellPath = [plugInManager plugInShellForIndex: index];
+    if (!shellPath) return;
+    NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
+    NSString* shellFile = [shellPath lastPathComponent];
+    
+    NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
+                                [NSString stringWithFormat:
+                                @"tell application \"Terminal\"\n"
+                                @"    activate\n"
+                                @"    set win to do script \"cd \\\"%@\\\"\"\n"
+                                @"    do script \"./%@\" in win\n"
+                                @"end tell", workingDir, shellFile]] autorelease];
+    [terminal executeAndReturnError:nil];
 }
 
 @end

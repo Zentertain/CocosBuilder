@@ -26,6 +26,7 @@
 #import "PlugInManager.h"
 #import "PlugInNode.h"
 #import "CocosBuilderAppDelegate.h"
+#import "ProjectSettings.h"
 #import <Carbon/Carbon.h>
 
 
@@ -68,21 +69,19 @@
             {
                 NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:plugInName action:@selector(selectedItem:) keyEquivalent:@""] autorelease];
                 item.target = self;
+                item.tag = -1;
             
                 [menu addItem:item];
             }
         }
-        else
-        {
-            NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@"No User PlugIns Installed" action:NULL keyEquivalent:@""] autorelease];
-            [item setEnabled:NO];
-            
-            [menu addItem:item];
-        }
         
         [segmControl setMenu:menu forSegment:0];
         
-        [toolbarItem bind:@"enabled" toObject:[CocosBuilderAppDelegate appDelegate] withKeyPath:@"hasOpenedDocument" options:NULL];
+        //[toolbarItem bind:@"enabled" toObject:[CocosBuilderAppDelegate appDelegate] withKeyPath:@"hasOpenedDocument" options:NULL];
+        if ([[menu itemArray] count] == 0)
+        {
+            [toolbarItem setEnabled:false];
+        }
         
         return toolbarItem;
     }
@@ -175,6 +174,54 @@
     [toolbar insertItemWithItemIdentifier:@"PlugIns" atIndex:[[toolbar items] count]];
 }
 
+- (void) refreshShellPlugInItemsToToolbar:(NSToolbar*) toolbar
+{
+    NSToolbarItem* plugInItem = nil;
+    for (NSToolbarItem* toolbarItem in [toolbar items])
+    {
+        if ([[toolbarItem itemIdentifier] isEqualToString:@"PlugIns"])
+        {
+            plugInItem = toolbarItem;
+            break;
+        }
+    }
+    if (plugInItem == nil) return;
+    NSSegmentedControl* seg = (NSSegmentedControl*)[plugInItem view];
+    NSMenu* plugInMenu = [seg menuForSegment:0];
+    NSUInteger count = [[plugInMenu itemArray] count];
+    for (int i = count - 1; i >= 0; --i)
+    {
+        NSMenuItem* menuItem = [plugInMenu itemAtIndex:i];
+        if ([menuItem tag] >= 0)
+        {
+            [plugInMenu removeItemAtIndex:i];
+        }
+    }
+    
+    ProjectSettings* project = [[CocosBuilderAppDelegate appDelegate] projectSettings];
+    if (project)
+    {
+        PlugInManager* pim = [PlugInManager sharedManager];
+        [pim loadPlugInsShellsForProject:[project projectPath]];
+        NSArray* nodeNames = [pim plugInsShellNames];
+        for (int i = 0; i < nodeNames.count; ++i)
+        {
+            NSString* plugInName = [nodeNames objectAtIndex:i];
+            NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:plugInName action:@selector(selectedItem:) keyEquivalent:@""] autorelease];
+            item.target = self;
+            item.tag = i;
+            
+            [plugInMenu addItem:item];
+        }
+    }
+    
+    if ([[plugInMenu itemArray] count] == 0) {
+        [plugInItem setEnabled:false];
+    } else {
+        [plugInItem setEnabled:true];
+    }
+}
+
 - (void) pressedSegment:(id) sender
 {
     int selectedSegment = [[sender cell] selectedSegment];
@@ -189,7 +236,19 @@
     NSString* objType = [sender title];
     BOOL asChild = ((GetCurrentKeyModifiers() & shiftKey) != 0);
     
-    [[CocosBuilderAppDelegate appDelegate] addPlugInNodeNamed:objType asChild:asChild];
+    NSMenuItem* item = sender;
+    if (item.tag < 0)
+    {
+        BOOL hasOpenedDocument = [[CocosBuilderAppDelegate appDelegate] hasOpenedDocument];
+        if (hasOpenedDocument)
+        {
+            [[CocosBuilderAppDelegate appDelegate] addPlugInNodeNamed:objType asChild:asChild];
+        }
+    }
+    else
+    {
+        [[CocosBuilderAppDelegate appDelegate] runShellForIndex:item.tag];
+    }
 }
 
 - (void) dealloc

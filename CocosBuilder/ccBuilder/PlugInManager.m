@@ -58,6 +58,7 @@
 #endif
     
     plugInsExporters = [[NSMutableArray alloc] init];
+    plugInsShells = [[NSMutableArray alloc] init];
     
     return self;
 }
@@ -240,6 +241,43 @@
         }
     }
     return NULL;
+}
+
+#pragma mark PlugInShell
+
+- (void) loadPlugInsShellsForProject:(NSString*)projectPath
+{
+    [plugInsShells removeAllObjects];
+    if (!projectPath) return;
+    
+    NSString* shellsDir = [[projectPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"PlugIns"];
+    BOOL isDirectory = NO;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:shellsDir isDirectory:&isDirectory] || !isDirectory) {
+        return;
+    }
+    
+    NSArray* files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:shellsDir error:nil];
+    for (NSString* file in files) {
+        NSString *extension = [[file pathExtension] lowercaseString];
+        if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"php"]) {
+            [plugInsShells addObject:[shellsDir stringByAppendingPathComponent:file]];
+        }
+    }
+}
+
+- (NSArray*) plugInsShellNames
+{
+    NSMutableArray* shellNames = [NSMutableArray arrayWithCapacity:[plugInsShells count]];
+    for (NSString* path in plugInsShells) {
+        NSString* shellName = [[path lastPathComponent] stringByDeletingPathExtension];
+        [shellNames addObject:shellName];
+    }
+    return shellNames;
+}
+
+- (NSString*) plugInShellForIndex:(int)idx
+{
+    return [plugInsShells objectAtIndex:idx];
 }
 
 @end

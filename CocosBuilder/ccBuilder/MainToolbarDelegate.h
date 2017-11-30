@@ -31,5 +31,6 @@
 }
 
 - (void) addPlugInItemsToToolbar:(NSToolbar*) toolbar;
+- (void) refreshShellPlugInItemsToToolbar:(NSToolbar*) toolbar;
 
 @end
