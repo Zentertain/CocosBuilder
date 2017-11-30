@@ -3794,21 +3794,46 @@ static BOOL hideAllToNextSeparator;
 
 #pragma mark PlugInShell
 
+- (NSSet*) getOptionsForPath:(NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*options[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (!match) {
+        return [NSSet set];
+    }
+    NSRange range = [match rangeAtIndex:1];
+    file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+    file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
+    NSArray* params = [[file lowercaseString] componentsSeparatedByString:@" "];
+    return [NSSet setWithArray:params];
+}
+
 - (void) runShellForIndex:(NSInteger) index
 {
     NSString* shellPath = [plugInManager plugInShellForIndex: index];
     if (!shellPath) return;
     NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
-    NSString* shellFile = [shellPath lastPathComponent];
     
-    NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
-                                [NSString stringWithFormat:
-                                @"tell application \"Terminal\"\n"
-                                @"    activate\n"
-                                @"    set win to do script \"cd \\\"%@\\\"\"\n"
-                                @"    do script \"./%@\" in win\n"
-                                @"end tell", workingDir, shellFile]] autorelease];
-    [terminal executeAndReturnError:nil];
+    NSSet* options = [self getOptionsForPath:shellPath];
+    if ([options containsObject:@"hide"]) {
+        NSTask* task = [[[NSTask alloc] init] autorelease];
+        [task setLaunchPath:shellPath];
+        [task setCurrentDirectoryPath:workingDir];
+        [task launch];
+    } else {
+        NSString* shellFile = [shellPath lastPathComponent];
+        NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
+                                    [NSString stringWithFormat:
+                                    @"tell application \"Terminal\"\n"
+                                    @"    activate\n"
+                                    @"    set win to do script \"cd \\\"%@\\\"\"\n"
+                                    @"    do script \"./%@\" in win\n"
+                                    @"end tell", workingDir, shellFile]] autorelease];
+        [terminal executeAndReturnError:nil];
+    }
 }
 
 @end
