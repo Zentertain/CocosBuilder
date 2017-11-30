@@ -3794,6 +3794,79 @@ static BOOL hideAllToNextSeparator;
 
 #pragma mark PlugInShell
 
+- (NSString*) getTopDirName:(NSString*) path
+{
+    NSString* topDirName;
+    NSString* dirName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+    do {
+        topDirName = [[path lastPathComponent] stringByDeletingPathExtension];
+        path = [path stringByDeletingLastPathComponent];
+        if ([path isEqualToString:@"/"]) {
+            return dirName;
+        }
+    } while (![path hasSuffix:@"Resource"]);
+    return topDirName;
+}
+
+- (NSString*) getSelectedPath
+{
+    NSOutlineView* tree = [self outlineProject];
+    if ([tree numberOfSelectedRows] == 0) {
+        return @"";
+    }
+    NSUInteger row = [tree selectedRow];
+    id item = [tree itemAtRow:row];
+    if ([item isKindOfClass:[RMResource class]]) {
+        return [item filePath];
+    } else if ([item isKindOfClass:[RMSpriteFrame class]]) {
+        return [item spriteSheetFile];
+    } else if ([item isKindOfClass:[RMAnimation class]]) {
+        return [item animationFile];
+    } else if ([item isKindOfClass:[RMDirectory class]]) {
+        return [item dirPath];
+    } else {
+        return @"";
+    }
+}
+
+- (NSArray*) getParamsForPath: (NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*params[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    
+    NSArray* params;
+    if (!match) {
+        params = [NSArray arrayWithObjects:@"resourcename", @"projectname", nil];
+    } else {
+        NSRange range = [match rangeAtIndex:1];
+        file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+        file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
+        params = [[file lowercaseString] componentsSeparatedByString:@" "];
+    }
+    
+    NSMutableArray* paramValues = [NSMutableArray arrayWithCapacity:[params count]];
+    for (NSString* param in params) {
+        NSString* paramValue = param;
+        if ([param isEqualToString:@"projectname"]) {
+            paramValue = [[[[self projectSettings] projectPath] lastPathComponent] stringByDeletingPathExtension];
+        } else if ([param isEqualToString:@"resourcename"]) {
+            paramValue = [self getTopDirName:[[self projectSettings] projectPath]];
+        } else if ([param isEqualToString:@"projectdir"]) {
+            paramValue = [[self projectSettings] projectPath];
+        } else if ([param isEqualToString:@"selectedpath"]) {
+            paramValue = [self getSelectedPath];
+        } else if ([param isEqualToString:@"currentpath"]) {
+            paramValue = [[self currentDocument] fileName];
+            if (!paramValue) paramValue = @"";
+        }
+        [paramValues addObject:paramValue];
+    }
+    return paramValues;
+}
+
 - (NSSet*) getOptionsForPath:(NSString*)path
 {
     NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
@@ -3818,20 +3891,23 @@ static BOOL hideAllToNextSeparator;
     NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
     
     NSSet* options = [self getOptionsForPath:shellPath];
+    NSArray* params = [self getParamsForPath:shellPath];
     if ([options containsObject:@"hide"]) {
         NSTask* task = [[[NSTask alloc] init] autorelease];
         [task setLaunchPath:shellPath];
         [task setCurrentDirectoryPath:workingDir];
+        [task setArguments:params];
         [task launch];
     } else {
         NSString* shellFile = [shellPath lastPathComponent];
+        NSString* paramsString = [params componentsJoinedByString:@"\\\" \\\""];
         NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
                                     [NSString stringWithFormat:
                                     @"tell application \"Terminal\"\n"
                                     @"    activate\n"
                                     @"    set win to do script \"cd \\\"%@\\\"\"\n"
-                                    @"    do script \"./%@\" in win\n"
-                                    @"end tell", workingDir, shellFile]] autorelease];
+                                    @"    do script \"./%@ \\\"%@\\\"\" in win\n"
+                                    @"end tell", workingDir, shellFile, paramsString]] autorelease];
         [terminal executeAndReturnError:nil];
     }
 }
