@@ -245,6 +245,20 @@
 
 #pragma mark PlugInShell
 
+- (NSString*) getShellTitleForPath: (NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\w]*title[^\\n\\r\\w]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (match) {
+        NSRange nameRange = [match rangeAtIndex:1];
+        return [[file substringWithRange:nameRange] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    } else {
+        return [[path lastPathComponent] stringByDeletingPathExtension];
+    }
+}
+
 - (void) loadPlugInsShellsForProject:(NSString*)projectPath
 {
     [plugInsShells removeAllObjects];
@@ -269,7 +283,7 @@
 {
     NSMutableArray* shellNames = [NSMutableArray arrayWithCapacity:[plugInsShells count]];
     for (NSString* path in plugInsShells) {
-        NSString* shellName = [[path lastPathComponent] stringByDeletingPathExtension];
+        NSString* shellName = [self getShellTitleForPath: path];
         [shellNames addObject:shellName];
     }
     return shellNames;
