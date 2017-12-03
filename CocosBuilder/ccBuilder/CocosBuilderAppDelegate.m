@@ -3886,7 +3886,7 @@ static BOOL hideAllToNextSeparator;
 
 - (void) runShellForIndex:(NSInteger) index
 {
-    NSString* shellPath = [plugInManager plugInShellForIndex: index];
+    NSString* shellPath = [[plugInManager plugInsShells] objectAtIndex:index];
     if (!shellPath) return;
     NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
     
@@ -3901,15 +3901,27 @@ static BOOL hideAllToNextSeparator;
     } else {
         NSString* shellFile = [shellPath lastPathComponent];
         NSString* paramsString = [params componentsJoinedByString:@"\\\" \\\""];
-        NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:
-                                    [NSString stringWithFormat:
-                                    @"tell application \"Terminal\"\n"
-                                    @"    activate\n"
-                                    @"    set win to do script \"cd \\\"%@\\\"\"\n"
-                                    @"    do script \"./%@ \\\"%@\\\"\" in win\n"
-                                    @"end tell", workingDir, shellFile, paramsString]] autorelease];
+        NSString* source = [NSString stringWithFormat:
+                            @"set isrunning to application \"Terminal\" is running\n"
+                            @"tell application \"Terminal\"\n"
+                            @"    activate\n"
+                            @"    if not isrunning then\n"
+                            @"        set newwin to window 1\n"
+                            @"        do script \"cd \\\"%@\\\"\" in window 1\n"
+                            @"    else\n"
+                            @"        set newwin to do script \"cd \\\"%@\\\"\"\n"
+                            @"    end if\n"
+                            @"    do script \"./%@ \\\"%@\\\"\" in newwin\n"
+                            @"end tell", workingDir, workingDir, shellFile, paramsString];
+        NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:source] autorelease];
         [terminal executeAndReturnError:nil];
     }
+}
+
+- (IBAction)runShellForItem:(id)sender
+{
+    int index = -[sender tag]-1;
+    [self runShellForIndex:index];
 }
 
 @end

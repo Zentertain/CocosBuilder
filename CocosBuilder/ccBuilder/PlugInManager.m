@@ -38,6 +38,9 @@
 #endif
 
 @synthesize plugInsExporters;
+@synthesize plugInsShells;
+@synthesize plugInsShellsTitles;
+@synthesize plugInsShellsFilters;
 
 + (PlugInManager*) sharedManager
 {
@@ -59,6 +62,8 @@
     
     plugInsExporters = [[NSMutableArray alloc] init];
     plugInsShells = [[NSMutableArray alloc] init];
+    plugInsShellsTitles = [[NSMutableArray alloc] init];
+    plugInsShellsFilters = [[NSMutableArray<NSSet*> alloc] init];
     
     return self;
 }
@@ -259,13 +264,32 @@
     }
 }
 
+- (NSSet*) getShellFiltersForPath: (NSString*)path
+{
+    NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*filters[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (!match) {
+        return [NSSet set];
+    }
+    NSRange range = [match rangeAtIndex:1];
+    file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+    file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
+    NSArray* params = [[file lowercaseString] componentsSeparatedByString:@" "];
+    return [NSSet setWithArray:params];
+}
+
 - (void) loadPlugInsShellsForProject:(NSString*)projectPath
 {
     [plugInsShells removeAllObjects];
+    [plugInsShellsTitles removeAllObjects];
+    [plugInsShellsFilters removeAllObjects];
     if (!projectPath) return;
     
     NSString* shellsDir = [[projectPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"PlugIns"];
-    BOOL isDirectory = NO;
+    BOOL isDirectory;
     if (![[NSFileManager defaultManager] fileExistsAtPath:shellsDir isDirectory:&isDirectory] || !isDirectory) {
         return;
     }
@@ -274,24 +298,12 @@
     for (NSString* file in files) {
         NSString *extension = [[file pathExtension] lowercaseString];
         if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"php"]) {
-            [plugInsShells addObject:[shellsDir stringByAppendingPathComponent:file]];
+            NSString* path = [shellsDir stringByAppendingPathComponent:file];
+            [plugInsShells addObject:path];
+            [plugInsShellsTitles addObject:[self getShellTitleForPath:path]];
+            [plugInsShellsFilters addObject:[self getShellFiltersForPath:path]];
         }
     }
-}
-
-- (NSArray*) plugInsShellNames
-{
-    NSMutableArray* shellNames = [NSMutableArray arrayWithCapacity:[plugInsShells count]];
-    for (NSString* path in plugInsShells) {
-        NSString* shellName = [self getShellTitleForPath: path];
-        [shellNames addObject:shellName];
-    }
-    return shellNames;
-}
-
-- (NSString*) plugInShellForIndex:(int)idx
-{
-    return [plugInsShells objectAtIndex:idx];
 }
 
 @end

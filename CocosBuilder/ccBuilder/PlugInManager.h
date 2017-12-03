@@ -38,6 +38,8 @@
 	
     NSMutableArray* plugInsExporters;
     NSMutableArray* plugInsShells;
+    NSMutableArray* plugInsShellsTitles;
+    NSMutableArray<NSSet*>* plugInsShellsFilters;
 }
 
 #if !CCB_BUILDING_COMMANDLINE
@@ -46,6 +48,9 @@
 #endif
 
 @property (nonatomic,retain) NSMutableArray* plugInsExporters;
+@property (nonnull,assign) NSMutableArray* plugInsShells;
+@property (nonnull,assign) NSMutableArray* plugInsShellsTitles;
+@property (nonnull,assign) NSMutableArray<NSSet*>* plugInsShellsFilters;
 
 + (PlugInManager*) sharedManager;
 - (void) loadPlugIns;
@@ -63,7 +68,4 @@
 
 // Plug-in shell
 - (void) loadPlugInsShellsForProject:(NSString*)projectPath;
-- (NSArray*) plugInsShellNames;
-- (NSString*) plugInShellForIndex:(int)idx;
-
 @end

@@ -25,6 +25,7 @@
 #import "ResourceManagerOutlineView.h"
 #import "CocosBuilderAppDelegate.h"
 #import "ResourceManager.h"
+#import "PlugInManager.h"
 
 @implementation ResourceManagerOutlineView
 
@@ -34,13 +35,18 @@
     int row=[self rowAtPoint:pt];
     
     id clickedItem = [self itemAtRow:row];
+    
+    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:row];
+    [self selectRowIndexes:indexSet byExtendingSelection:NO];
 
     NSMenu* menu = [CocosBuilderAppDelegate appDelegate].menuContextResManager;
     menu.autoenablesItems = NO;
     
     NSArray* items = [menu itemArray];
-    for (NSMenuItem* item in items)
+    for (int i=[items count]-1; i>=0; --i)
     {
+        NSMenuItem* item = [items objectAtIndex:i];
+        
         if (item.action == @selector(menuCreateSmartSpriteSheet:))
         {
             if ([clickedItem isKindOfClass:[RMResource class]]) {
@@ -105,9 +111,56 @@
             }
             item.tag = row;
         }
+        else if (item.tag < 0)
+        {
+            [menu removeItemAtIndex:i];
+        }
     }
     
-    // TODO: Update menu
+    // Update menu
+    NSString* extension = nil;
+    if ([clickedItem isKindOfClass:[RMResource class]]) {
+        NSString* filePath = [(RMResource*)clickedItem filePath];
+        extension = [[filePath pathExtension] lowercaseString];
+        if (![extension length]) {
+            BOOL isDirectory;
+            [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
+            if (isDirectory) {
+                extension = @"folder";
+            }
+        }
+    } else if ([clickedItem isKindOfClass:[RMDirectory class]]) {
+        extension = @"folder";
+    } else if ([clickedItem isKindOfClass:[RMSpriteFrame class]]) {
+        extension = @"spriteframe";
+    } else if ([clickedItem isKindOfClass:[RMAnimation class]]) {
+        extension = @"animation";
+    }
+    
+    if (extension)
+    {
+        BOOL hasPlugIn = NO;
+        NSMutableArray<NSSet*>* plugInsShellsFilters = [[PlugInManager sharedManager] plugInsShellsFilters];
+        for (int i=0; i<[plugInsShellsFilters count]; ++i)
+        {
+            NSSet* extSet = [plugInsShellsFilters objectAtIndex:i];
+            if ([extSet containsObject:extension])
+            {
+                if (!hasPlugIn)
+                {
+                    hasPlugIn = YES;
+                    NSMenuItem* seperator = [NSMenuItem separatorItem];
+                    seperator.tag = INT_MIN;
+                    [menu addItem:seperator];
+                }
+                NSString* plugInName = [[[PlugInManager sharedManager] plugInsShellsTitles] objectAtIndex:i];
+                NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:plugInName action:@selector(runShellForItem:) keyEquivalent:@""] autorelease];
+                item.target = [CocosBuilderAppDelegate appDelegate];
+                item.tag = -i-1;
+                [menu addItem:item];
+            }
+        }
+    }
     
     return menu;
 }
