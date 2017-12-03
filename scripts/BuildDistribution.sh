@@ -8,9 +8,9 @@ rm -Rf build/
 rm -Rf CocosBuilder/build/
 
 # Update version for about box
-echo "Version: $1" > version/Version.txt
-echo -n "GitHub: " >> version/Version.txt
-git rev-parse --short=10 HEAD >> version/Version.txt
+# echo "Version: $1" > version/Version.txt
+# echo -n "GitHub: " >> version/Version.txt
+# git rev-parse --short=10 HEAD >> version/Version.txt
 touch version/Version.txt
 
 # Clean and build CocosBuilder
