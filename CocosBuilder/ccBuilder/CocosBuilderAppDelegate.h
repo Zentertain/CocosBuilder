@@ -234,7 +234,7 @@ enum {
     
 @private
     MainWindow *window;
-    
+    BOOL isCheckedUpdate;
 }
 
 @property (assign) IBOutlet MainWindow *window;
@@ -364,5 +364,6 @@ enum {
 
 - (void) runShellForIndex:(NSInteger) index;
 - (IBAction)runShellForItem:(id)sender;
+- (void) checkUpdate;
 
 @end

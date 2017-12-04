@@ -335,6 +335,7 @@ static CocosBuilderAppDelegate* sharedAppDelegate;
     self.showGuides = YES;
     self.snapToGuides = YES;
     self.showStickyNotes = YES;
+    isCheckedUpdate = NO;
     
     [self.window makeKeyWindow];
     
@@ -1368,6 +1369,7 @@ static BOOL hideAllToNextSeparator;
     }
     
     [toolbarDelegate refreshShellPlugInItemsToToolbar:toolbar];
+    [self checkUpdate];
     
     return YES;
 }
@@ -3922,6 +3924,59 @@ static BOOL hideAllToNextSeparator;
 {
     int index = -[sender tag]-1;
     [self runShellForIndex:index];
+}
+
+- (void) checkUpdate
+{
+    if (isCheckedUpdate) return;
+    
+    NSString* projectPath = [[self projectSettings] projectPath];
+    if (!projectPath) return;
+    isCheckedUpdate = YES;
+    
+    NSString* pathMy = [[NSBundle mainBundle] pathForResource:@"version/AutoUpdateVersion" ofType:@"txt"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:pathMy]) return;
+    NSString* strVerMy = [NSString stringWithContentsOfFile:pathMy encoding:NSUTF8StringEncoding error:nil];
+    strVerMy = [strVerMy stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (!strVerMy || ![strVerMy length]) return;
+    int verMy = [strVerMy intValue];
+    
+    NSString* path = projectPath;
+    do {
+        path = [path stringByDeletingLastPathComponent];
+        if ([path isEqualToString:@"/"]) {
+            return;
+        }
+    } while (![path hasSuffix:@"Resource"]);
+    NSString* sourceAppPath = [path stringByAppendingPathComponent:@"PlugIns/CocosBuilder-PlugIns.app"];
+    path = [sourceAppPath stringByAppendingPathComponent:@"Contents/Resources/version/AutoUpdateVersion.txt"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        return;
+    }
+    
+    NSString* strVer = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    strVer = [strVer stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (!strVer || ![strVer length]) return;
+    int ver = [strVer intValue];
+    
+    if (ver > verMy) {
+        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+        [alert addButtonWithTitle:@"Update"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert setMessageText:@"Update CocosBuilder-PlugIns?"];
+        [alert setInformativeText:@"There is a new CocosBuilder-PlugIns version.\nDo you want to update your application now?"];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        NSModalResponse returnCode = [alert runModal];
+        if(returnCode == NSAlertFirstButtonReturn)
+        {
+            NSTask *task = [[NSTask alloc] init];
+            [task setLaunchPath:@"/bin/bash"];
+            NSString* cmd = [NSString stringWithFormat:@"sleep 0.2;rsync -aE \"%@/\" \"%@\";open \"%@\"", sourceAppPath, [[NSBundle mainBundle] bundlePath], [[NSBundle mainBundle] bundlePath]];
+            [task setArguments:@[@"-c", cmd]];
+            [task launch];
+            [[NSApplication sharedApplication] terminate:self];
+        }
+    }
 }
 
 @end
