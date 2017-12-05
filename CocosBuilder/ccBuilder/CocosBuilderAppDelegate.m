@@ -3831,7 +3831,7 @@ static BOOL hideAllToNextSeparator;
     }
 }
 
-- (NSArray*) getParamsForPath: (NSString*)path
+- (NSArray*) getParamsForPath: (NSString*)path isResouceMenu:(BOOL)isMenu
 {
     NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
@@ -3859,7 +3859,12 @@ static BOOL hideAllToNextSeparator;
         } else if ([param isEqualToString:@"projectdir"]) {
             paramValue = [[self projectSettings] projectPath];
         } else if ([param isEqualToString:@"selectedpath"]) {
-            paramValue = [self getSelectedPath];
+            if (isMenu) {
+                paramValue = [self getSelectedPath];
+            } else {
+                paramValue = [[self currentDocument] fileName];
+                if (!paramValue) paramValue = @"";
+            }
         } else if ([param isEqualToString:@"currentpath"]) {
             paramValue = [[self currentDocument] fileName];
             if (!paramValue) paramValue = @"";
@@ -3886,14 +3891,14 @@ static BOOL hideAllToNextSeparator;
     return [NSSet setWithArray:params];
 }
 
-- (void) runShellForIndex:(NSInteger) index
+- (void) runShellForIndex:(NSInteger) index isResouceMenu:(BOOL)isMenu
 {
     NSString* shellPath = [[plugInManager plugInsShells] objectAtIndex:index];
     if (!shellPath) return;
     NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
     
     NSSet* options = [self getOptionsForPath:shellPath];
-    NSArray* params = [self getParamsForPath:shellPath];
+    NSArray* params = [self getParamsForPath:shellPath isResouceMenu:isMenu];
     if ([options containsObject:@"hide"]) {
         NSTask* task = [[[NSTask alloc] init] autorelease];
         [task setLaunchPath:shellPath];
@@ -3903,18 +3908,17 @@ static BOOL hideAllToNextSeparator;
     } else {
         NSString* shellFile = [shellPath lastPathComponent];
         NSString* paramsString = [params componentsJoinedByString:@"\\\" \\\""];
+        NSString* shell = [NSString stringWithFormat:@"cd \\\"%@\\\";./%@ \\\"%@\\\"", workingDir, shellFile, paramsString];
         NSString* source = [NSString stringWithFormat:
                             @"set isrunning to application \"Terminal\" is running\n"
                             @"tell application \"Terminal\"\n"
                             @"    activate\n"
                             @"    if not isrunning then\n"
-                            @"        set newwin to window 1\n"
-                            @"        do script \"cd \\\"%@\\\"\" in window 1\n"
+                            @"        do script \"%@\" in window 1\n"
                             @"    else\n"
-                            @"        set newwin to do script \"cd \\\"%@\\\"\"\n"
+                            @"        do script \"%@\"\n"
                             @"    end if\n"
-                            @"    do script \"./%@ \\\"%@\\\"\" in newwin\n"
-                            @"end tell", workingDir, workingDir, shellFile, paramsString];
+                            @"end tell", shell, shell];
         NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:source] autorelease];
         [terminal executeAndReturnError:nil];
     }
@@ -3923,7 +3927,7 @@ static BOOL hideAllToNextSeparator;
 - (IBAction)runShellForItem:(id)sender
 {
     int index = -[sender tag]-1;
-    [self runShellForIndex:index];
+    [self runShellForIndex:index isResouceMenu:YES];
 }
 
 - (void) checkUpdate

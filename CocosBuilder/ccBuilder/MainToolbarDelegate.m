@@ -252,7 +252,7 @@
     }
     else
     {
-        [[CocosBuilderAppDelegate appDelegate] runShellForIndex:item.tag];
+        [[CocosBuilderAppDelegate appDelegate] runShellForIndex:item.tag isResouceMenu:NO];
     }
 }
 
