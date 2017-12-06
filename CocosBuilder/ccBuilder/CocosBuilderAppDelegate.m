@@ -3867,8 +3867,7 @@ static BOOL hideAllToNextSeparator;
             if (isMenu) {
                 paramValue = [self getSelectedPath];
             } else {
-                paramValue = [[self currentDocument] fileName];
-                if (!paramValue) paramValue = @"";
+                paramValue = [[self projectSettings] projectPath];
             }
         } else if ([param isEqualToString:@"currentpath"]) {
             paramValue = [[self currentDocument] fileName];

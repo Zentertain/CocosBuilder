@@ -210,15 +210,12 @@
         for (int i = 0; i < nodeNames.count; ++i)
         {
             NSSet* extSet = [[pim plugInsShellsFilters] objectAtIndex:i];
-            if ([extSet count] && ![extSet containsObject:@"ccb"]) continue;
+            if ([extSet count] && ![extSet containsObject:@"ccbproj"]) continue;
             
             NSString* plugInName = [nodeNames objectAtIndex:i];
             NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:plugInName action:@selector(selectedItem:) keyEquivalent:@""] autorelease];
             item.target = self;
             item.tag = i;
-            if ([extSet count]) {
-                [item bind:@"enabled" toObject:[CocosBuilderAppDelegate appDelegate] withKeyPath:@"hasOpenedDocument" options:nil];
-            }
             
             [plugInMenu addItem:item];
         }
