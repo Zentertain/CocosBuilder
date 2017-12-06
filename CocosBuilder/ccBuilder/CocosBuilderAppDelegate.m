@@ -3796,18 +3796,23 @@ static BOOL hideAllToNextSeparator;
 
 #pragma mark PlugInShell
 
-- (NSString*) getTopDirName:(NSString*) path
+- (NSString*) getResourceRoot:(NSString*) path topDirNamePointer:(NSString**)topDirNamePointer
 {
     NSString* topDirName;
-    NSString* dirName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+    if (topDirNamePointer) {
+        *topDirNamePointer = [[path stringByDeletingLastPathComponent] lastPathComponent];
+    }
     do {
         topDirName = [[path lastPathComponent] stringByDeletingPathExtension];
         path = [path stringByDeletingLastPathComponent];
         if ([path isEqualToString:@"/"]) {
-            return dirName;
+            return path;
         }
     } while (![path hasSuffix:@"Resource"]);
-    return topDirName;
+    if (topDirNamePointer) {
+        *topDirNamePointer = topDirName;
+    }
+    return path;
 }
 
 - (NSString*) getSelectedPath
@@ -3855,7 +3860,7 @@ static BOOL hideAllToNextSeparator;
         if ([param isEqualToString:@"projectname"]) {
             paramValue = [[[[self projectSettings] projectPath] lastPathComponent] stringByDeletingPathExtension];
         } else if ([param isEqualToString:@"resourcename"]) {
-            paramValue = [self getTopDirName:[[self projectSettings] projectPath]];
+            [self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:&paramValue];
         } else if ([param isEqualToString:@"projectdir"]) {
             paramValue = [[self projectSettings] projectPath];
         } else if ([param isEqualToString:@"selectedpath"]) {
@@ -3868,6 +3873,10 @@ static BOOL hideAllToNextSeparator;
         } else if ([param isEqualToString:@"currentpath"]) {
             paramValue = [[self currentDocument] fileName];
             if (!paramValue) paramValue = @"";
+        } else if ([param isEqualToString:@"apppath"]) {
+            paramValue = [[NSBundle mainBundle] bundlePath];
+        } else if ([param isEqualToString:@"resourceroot"]) {
+            paramValue = [self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:nil];
         }
         [paramValues addObject:paramValue];
     }
@@ -3891,28 +3900,10 @@ static BOOL hideAllToNextSeparator;
     return [NSSet setWithArray:params];
 }
 
-- (void) runShellForIndex:(NSInteger) index isResouceMenu:(BOOL)isMenu
+- (void) runShellForPath:(NSString*) shellPath isResouceMenu:(BOOL)isMenu
 {
-    NSString* shellPath = [[plugInManager plugInsShells] objectAtIndex:index];
     if (!shellPath) return;
     NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
-    
-    if ([self hasDirtyDocument]) {
-        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-        [alert addButtonWithTitle:@"Save All"];
-        [alert addButtonWithTitle:@"Cancel"];
-        [alert addButtonWithTitle:@"Don't Save"];
-        [alert setMessageText:@"Run PlugIn"];
-        [alert setInformativeText:@"There are unsaved documents. Do you want to save before running PlugIn?"];
-        [alert setAlertStyle:NSWarningAlertStyle];
-        NSModalResponse returnCode = [alert runModal];
-        switch (returnCode) {
-            case NSAlertSecondButtonReturn:
-                return;
-            case NSAlertFirstButtonReturn:
-                [self saveAllDocuments:nil];
-        }
-    }
     
     NSSet* options = [self getOptionsForPath:shellPath];
     NSArray* params = [self getParamsForPath:shellPath isResouceMenu:isMenu];
@@ -3941,6 +3932,31 @@ static BOOL hideAllToNextSeparator;
     }
 }
 
+- (void) runShellForIndex:(NSInteger) index isResouceMenu:(BOOL)isMenu
+{
+    NSString* shellPath = [[plugInManager plugInsShells] objectAtIndex:index];
+    if (!shellPath) return;
+    
+    if ([self hasDirtyDocument]) {
+        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+        [alert addButtonWithTitle:@"Save All"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert addButtonWithTitle:@"Don't Save"];
+        [alert setMessageText:@"Run PlugIn"];
+        [alert setInformativeText:@"There are unsaved documents. Do you want to save before running PlugIn?"];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        NSModalResponse returnCode = [alert runModal];
+        switch (returnCode) {
+            case NSAlertSecondButtonReturn:
+                return;
+            case NSAlertFirstButtonReturn:
+                [self saveAllDocuments:nil];
+        }
+    }
+    
+    [self runShellForPath:shellPath isResouceMenu:isMenu];
+}
+
 - (IBAction)runShellForItem:(id)sender
 {
     int index = -[sender tag]-1;
@@ -3962,21 +3978,18 @@ static BOOL hideAllToNextSeparator;
     if (!strVerMy || ![strVerMy length]) return;
     int verMy = [strVerMy intValue];
     
-    NSString* path = projectPath;
-    do {
-        path = [path stringByDeletingLastPathComponent];
-        if ([path isEqualToString:@"/"]) {
-            return;
-        }
-    } while (![path hasSuffix:@"Resource"]);
-    NSString* sourceAppPath = [path stringByAppendingPathComponent:@"PlugIns/CocosBuilder-PlugIns.app"];
-    path = [sourceAppPath stringByAppendingPathComponent:@"Contents/Resources/version/AutoUpdateVersion.txt"];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        return;
-    }
+    NSString* resourcePath = [self getResourceRoot:projectPath topDirNamePointer:nil];
+    if ([resourcePath isEqualToString:@"/"]) return;
+    NSString* shellPath = [resourcePath stringByAppendingPathComponent:@"PlugIns/updateCocosBuilder.sh"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:shellPath]) return;
     
-    NSString* strVer = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    strVer = [strVer stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString* file = [NSString stringWithContentsOfFile:shellPath encoding:NSUTF8StringEncoding error:nil];
+    NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
+                                @"#[^\\n\\r\\S]*version[^\\n\\r\\S]*:[^\\n\\r\\S]*(\\d+)" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (!match) return;
+    NSRange range = [match rangeAtIndex:1];
+    NSString* strVer = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (!strVer || ![strVer length]) return;
     int ver = [strVer intValue];
     
@@ -3990,11 +4003,7 @@ static BOOL hideAllToNextSeparator;
         NSModalResponse returnCode = [alert runModal];
         if(returnCode == NSAlertFirstButtonReturn)
         {
-            NSTask *task = [[NSTask alloc] init];
-            [task setLaunchPath:@"/bin/bash"];
-            NSString* cmd = [NSString stringWithFormat:@"sleep 0.2;rsync -aE \"%@/\" \"%@\";open \"%@\"", sourceAppPath, [[NSBundle mainBundle] bundlePath], [[NSBundle mainBundle] bundlePath]];
-            [task setArguments:@[@"-c", cmd]];
-            [task launch];
+            [self runShellForPath:shellPath isResouceMenu:NO];
             [[NSApplication sharedApplication] terminate:self];
         }
     }
