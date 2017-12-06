@@ -3897,6 +3897,23 @@ static BOOL hideAllToNextSeparator;
     if (!shellPath) return;
     NSString* workingDir = [shellPath stringByDeletingLastPathComponent];
     
+    if ([self hasDirtyDocument]) {
+        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+        [alert addButtonWithTitle:@"Save All"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert addButtonWithTitle:@"Don't Save"];
+        [alert setMessageText:@"Run PlugIn"];
+        [alert setInformativeText:@"There are unsaved documents. Do you want to save before running PlugIn?"];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        NSModalResponse returnCode = [alert runModal];
+        switch (returnCode) {
+            case NSAlertSecondButtonReturn:
+                return;
+            case NSAlertFirstButtonReturn:
+                [self saveAllDocuments:nil];
+        }
+    }
+    
     NSSet* options = [self getOptionsForPath:shellPath];
     NSArray* params = [self getParamsForPath:shellPath isResouceMenu:isMenu];
     if ([options containsObject:@"hide"]) {
