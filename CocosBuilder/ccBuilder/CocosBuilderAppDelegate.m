@@ -3915,7 +3915,8 @@ static BOOL hideAllToNextSeparator;
     } else {
         NSString* shellFile = [shellPath lastPathComponent];
         NSString* paramsString = [params componentsJoinedByString:@"\\\" \\\""];
-        NSString* shell = [NSString stringWithFormat:@"cd \\\"%@\\\";./%@ \\\"%@\\\"", workingDir, shellFile, paramsString];
+        NSString* clearString = [options containsObject:@"clear"] ? @"clear;" : @"";
+        NSString* shell = [NSString stringWithFormat:@"cd \\\"%@\\\";%@./%@ \\\"%@\\\"", workingDir, clearString, shellFile, paramsString];
         NSString* source = [NSString stringWithFormat:
                             @"set isrunning to application \"Terminal\" is running\n"
                             @"tell application \"Terminal\"\n"
