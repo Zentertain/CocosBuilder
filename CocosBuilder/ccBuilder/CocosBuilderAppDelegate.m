@@ -3826,9 +3826,9 @@ static BOOL hideAllToNextSeparator;
     if ([item isKindOfClass:[RMResource class]]) {
         return [item filePath];
     } else if ([item isKindOfClass:[RMSpriteFrame class]]) {
-        return [item spriteSheetFile];
+        return [[item spriteSheetFile] stringByAppendingPathComponent:[item spriteFrameName]];
     } else if ([item isKindOfClass:[RMAnimation class]]) {
-        return [item animationFile];
+        return [[item animationFile] stringByAppendingPathComponent:[item animationName]];
     } else if ([item isKindOfClass:[RMDirectory class]]) {
         return [item dirPath];
     } else {
@@ -3836,7 +3836,7 @@ static BOOL hideAllToNextSeparator;
     }
 }
 
-- (NSArray*) getParamsForPath: (NSString*)path isResouceMenu:(BOOL)isMenu
+- (NSArray*) getParamsForPath: (NSString*)path isResouceMenu:(BOOL)isResouceMenu
 {
     NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
@@ -3845,7 +3845,7 @@ static BOOL hideAllToNextSeparator;
     
     NSArray* params;
     if (!match) {
-        params = [NSArray arrayWithObjects:@"resourcename", @"projectname", nil];
+        params = [NSArray arrayWithObjects:@"selectedpath", @"projectname", nil];
     } else {
         NSRange range = [match rangeAtIndex:1];
         file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -3859,23 +3859,27 @@ static BOOL hideAllToNextSeparator;
         NSString* paramValue = param;
         if ([param isEqualToString:@"projectname"]) {
             paramValue = [[[[self projectSettings] projectPath] lastPathComponent] stringByDeletingPathExtension];
+        } else if ([param isEqualToString:@"projectpath"]) {
+            paramValue = [[self projectSettings] projectPath];
+        } else if ([param isEqualToString:@"projectdir"]) {
+            paramValue = [[[self projectSettings] projectPath] stringByDeletingLastPathComponent];
+        } else if ([param isEqualToString:@"projectdirname"]) {
+            paramValue = [[[[self projectSettings] projectPath] stringByDeletingLastPathComponent] lastPathComponent];
         } else if ([param isEqualToString:@"resourcename"]) {
             [self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:&paramValue];
-        } else if ([param isEqualToString:@"projectdir"]) {
-            paramValue = [[self projectSettings] projectPath];
+        } else if ([param isEqualToString:@"resourceroot"]) {
+            paramValue = [self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:nil];
         } else if ([param isEqualToString:@"selectedpath"]) {
-            if (isMenu) {
+            if (isResouceMenu) {
                 paramValue = [self getSelectedPath];
             } else {
-                paramValue = [[self projectSettings] projectPath];
+                paramValue = [[[self projectSettings] projectPath] stringByDeletingLastPathComponent];
             }
         } else if ([param isEqualToString:@"currentpath"]) {
             paramValue = [[self currentDocument] fileName];
             if (!paramValue) paramValue = @"";
         } else if ([param isEqualToString:@"apppath"]) {
             paramValue = [[NSBundle mainBundle] bundlePath];
-        } else if ([param isEqualToString:@"resourceroot"]) {
-            paramValue = [self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:nil];
         }
         [paramValues addObject:paramValue];
     }
