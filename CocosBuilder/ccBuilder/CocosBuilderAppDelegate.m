@@ -3806,7 +3806,7 @@ static BOOL hideAllToNextSeparator;
         topDirName = [[path lastPathComponent] stringByDeletingPathExtension];
         path = [path stringByDeletingLastPathComponent];
         if ([path isEqualToString:@"/"]) {
-            return path;
+            return [[[self projectSettings] projectPath] stringByDeletingLastPathComponent];
         }
     } while (![path hasSuffix:@"Resource"]);
     if (topDirNamePointer) {
@@ -3836,6 +3836,7 @@ static BOOL hideAllToNextSeparator;
     }
 }
 
+//Params参数解析
 - (NSArray*) getParamsForPath: (NSString*)path isResouceMenu:(BOOL)isResouceMenu
 {
     NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
@@ -3845,7 +3846,7 @@ static BOOL hideAllToNextSeparator;
     
     NSArray* params;
     if (!match) {
-        params = [NSArray arrayWithObjects:@"selectedpath", @"projectname", nil];
+        params = [NSArray arrayWithObjects:@"selectedpath", @"resourcepath", @"projectname", nil];
     } else {
         NSRange range = [match rangeAtIndex:1];
         file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -3860,11 +3861,13 @@ static BOOL hideAllToNextSeparator;
         if ([param isEqualToString:@"projectname"]) {
             paramValue = [[[[self projectSettings] projectPath] lastPathComponent] stringByDeletingPathExtension];
         } else if ([param isEqualToString:@"projectpath"]) {
-            paramValue = [[self projectSettings] projectPath];
-        } else if ([param isEqualToString:@"projectdir"]) {
             paramValue = [[[self projectSettings] projectPath] stringByDeletingLastPathComponent];
+        } else if ([param isEqualToString:@"ccbprojpath"]) {
+            paramValue = [[self projectSettings] projectPath];
         } else if ([param isEqualToString:@"projectdirname"]) {
             paramValue = [[[[self projectSettings] projectPath] stringByDeletingLastPathComponent] lastPathComponent];
+        } else if ([param isEqualToString:@"resourcepath"] || [param isEqualToString:@"resourcespath"]) {
+            paramValue = [[[[self projectSettings] projectPath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Resources"];
         } else if ([param isEqualToString:@"resourcename"]) {
             [self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:&paramValue];
         } else if ([param isEqualToString:@"resourceroot"]) {
@@ -3880,6 +3883,10 @@ static BOOL hideAllToNextSeparator;
             if (!paramValue) paramValue = @"";
         } else if ([param isEqualToString:@"apppath"]) {
             paramValue = [[NSBundle mainBundle] bundlePath];
+        } else if ([param isEqualToString:@"pluginspath"] || [param isEqualToString:@"pluginpath"]) {
+            paramValue = [path stringByDeletingLastPathComponent];
+        } else if ([param isEqualToString:@"pluginsroot"] || [param isEqualToString:@"pluginroot"]) {
+            paramValue = [[self getResourceRoot:[[self projectSettings] projectPath] topDirNamePointer:nil] stringByAppendingPathComponent:@"PlugIns"];
         }
         [paramValues addObject:paramValue];
     }
@@ -3919,18 +3926,32 @@ static BOOL hideAllToNextSeparator;
     } else {
         NSString* shellFile = [shellPath lastPathComponent];
         NSString* paramsString = [params componentsJoinedByString:@"\\\" \\\""];
-        NSString* clearString = [options containsObject:@"clear"] ? @"clear;" : @"";
-        NSString* shell = [NSString stringWithFormat:@"cd \\\"%@\\\";%@./%@ \\\"%@\\\"", workingDir, clearString, shellFile, paramsString];
+        
+        // Options参数解析
+        NSString* beforeStringRunning = @""; NSString* beforeStringNotRunning = @"";
+        NSString* afterStringRunning = @""; NSString* afterStringNotRunning = @"";
+        if ([options containsObject:@"close"]) {
+            beforeStringRunning = [beforeStringRunning stringByAppendingString:@";WIN=`osascript -e 'first window of application \\\"Terminal\\\"'`"];
+            afterStringRunning = [afterStringRunning stringByAppendingString:@" && (osascript -e \\\"close $WIN of application \\\\\\\"Terminal\\\\\\\"\\\"&exit)"];
+            afterStringNotRunning = [afterStringNotRunning stringByAppendingString:@" && (osascript -e \\\"quit application \\\\\\\"Terminal\\\\\\\"\\\"&exit)"];
+        }
+        if ([options containsObject:@"clear"]) {
+            beforeStringRunning = [beforeStringRunning stringByAppendingString:@";clear"];
+            beforeStringNotRunning = [beforeStringNotRunning stringByAppendingString:@";clear"];
+        }
+        NSString* shellRunning = [NSString stringWithFormat:@"cd \\\"%@\\\"%@;./%@ \\\"%@\\\"%@", workingDir, beforeStringRunning, shellFile, paramsString, afterStringRunning];
+        NSString* shellNotRunning = [NSString stringWithFormat:@"cd \\\"%@\\\"%@;./%@ \\\"%@\\\"%@", workingDir, beforeStringNotRunning, shellFile, paramsString, afterStringNotRunning];
+        
         NSString* source = [NSString stringWithFormat:
                             @"set isrunning to application \"Terminal\" is running\n"
                             @"tell application \"Terminal\"\n"
                             @"    activate\n"
-                            @"    if not isrunning then\n"
-                            @"        do script \"%@\" in window 1\n"
+                            @"    if isrunning then\n"
+                            @"        set win to do script \"%@\"\n"
                             @"    else\n"
-                            @"        do script \"%@\"\n"
+                            @"        do script \"%@\" in window 1\n"
                             @"    end if\n"
-                            @"end tell", shell, shell];
+                            @"end tell", shellRunning, shellNotRunning];
         NSAppleScript* terminal = [[[NSAppleScript alloc] initWithSource:source] autorelease];
         [terminal executeAndReturnError:nil];
     }

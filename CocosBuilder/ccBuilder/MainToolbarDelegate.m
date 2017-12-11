@@ -210,7 +210,7 @@
         for (int i = 0; i < nodeNames.count; ++i)
         {
             NSSet* extSet = [[pim plugInsShellsFilters] objectAtIndex:i];
-            if ([extSet count] && ![extSet containsObject:@"ccbproj"]) continue;
+            if ([extSet count] && ![extSet containsObject:@"folder"]) continue;
             
             NSString* plugInName = [nodeNames objectAtIndex:i];
             NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:plugInName action:@selector(selectedItem:) keyEquivalent:@""] autorelease];
