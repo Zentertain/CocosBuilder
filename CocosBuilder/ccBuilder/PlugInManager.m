@@ -322,7 +322,7 @@
     for (NSString* file in files) {
         NSString *extension = [[file pathExtension] lowercaseString];
         if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"php"]) {
-            NSString* path = [shellsDir stringByAppendingPathComponent:file];
+            NSString* path = [globalDir stringByAppendingPathComponent:file];
             NSSet* options = [[CocosBuilderAppDelegate appDelegate] getOptionsForPath:path];
             if ([options containsObject:@"global"]) {
                 NSString* title = [self getShellTitleForPath:path];

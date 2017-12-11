@@ -3876,7 +3876,7 @@ static BOOL hideAllToNextSeparator;
             if (isResouceMenu) {
                 paramValue = [self getSelectedPath];
             } else {
-                paramValue = [[[self projectSettings] projectPath] stringByDeletingLastPathComponent];
+                paramValue = [[[[self projectSettings] projectPath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Resources"];
             }
         } else if ([param isEqualToString:@"currentpath"]) {
             paramValue = [[self currentDocument] fileName];
