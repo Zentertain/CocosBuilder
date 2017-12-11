@@ -270,16 +270,22 @@
     NSString* file = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:
                                 @"#[^\\n\\r\\S]*filters[^\\n\\r\\S]*:([^\\n\\r]+)" options:NSRegularExpressionCaseInsensitive error:nil];
-    NSTextCheckingResult* match = [reg firstMatchInString:file options:0 range:NSMakeRange(0, [file length])];
-    if (!match) {
+    NSArray<NSTextCheckingResult *>* matches = [reg matchesInString:file options:0 range:NSMakeRange(0, [file length])];
+    if (!matches || [matches count] == 0) {
         return [NSSet set];
     }
-    NSRange range = [match rangeAtIndex:1];
-    file = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
-    file = [reg stringByReplacingMatchesInString:file options:0 range:NSMakeRange(0, [file length]) withTemplate:@" "];
-    NSArray* params = [[file lowercaseString] componentsSeparatedByString:@" "];
-    return [NSSet setWithArray:params];
+    
+    NSMutableSet* result = [NSMutableSet set];
+    for (int i=0; i<[matches count]; ++i) {
+        NSTextCheckingResult* match = [matches objectAtIndex:i];
+        NSRange range = [match rangeAtIndex:1];
+        NSString* str = [[file substringWithRange:range] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        reg = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options:0 error:nil];
+        str = [reg stringByReplacingMatchesInString:str options:0 range:NSMakeRange(0, [str length]) withTemplate:@" "];
+        NSArray* params = [[str lowercaseString] componentsSeparatedByString:@" "];
+        [result addObjectsFromArray:params];
+    }
+    return result;
 }
 
 - (void) loadPlugInsShellsForProject:(NSString*)projectPath
