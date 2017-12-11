@@ -366,4 +366,7 @@ enum {
 - (IBAction)runShellForItem:(id)sender;
 - (void) checkUpdate;
 
+- (NSString*) getResourceRoot:(NSString*) path topDirNamePointer:(NSString**)topDirNamePointer;
+- (NSSet*) getOptionsForPath:(NSString*)path;
+
 @end
