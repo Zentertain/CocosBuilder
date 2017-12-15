@@ -306,9 +306,12 @@
         NSString *extension = [[file pathExtension] lowercaseString];
         if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"php"]) {
             NSString* path = [shellsDir stringByAppendingPathComponent:file];
-            [plugInsShells addObject:path];
-            [plugInsShellsTitles addObject:[self getShellTitleForPath:path]];
-            [plugInsShellsFilters addObject:[self getShellFiltersForPath:path]];
+            NSSet* options = [[CocosBuilderAppDelegate appDelegate] getOptionsForPath:path];
+            if (![options containsObject:@"module"]) {
+                [plugInsShells addObject:path];
+                [plugInsShellsTitles addObject:[self getShellTitleForPath:path]];
+                [plugInsShellsFilters addObject:[self getShellFiltersForPath:path]];
+            }
         }
     }
     
@@ -324,7 +327,7 @@
         if ([extension isEqualToString:@"sh"] || [extension isEqualToString:@"py"] || [extension isEqualToString:@"php"]) {
             NSString* path = [globalDir stringByAppendingPathComponent:file];
             NSSet* options = [[CocosBuilderAppDelegate appDelegate] getOptionsForPath:path];
-            if ([options containsObject:@"global"]) {
+            if ([options containsObject:@"global"] && ![options containsObject:@"module"]) {
                 NSString* title = [self getShellTitleForPath:path];
                 if (![plugInsShellsTitles containsObject:title]) {
                     [plugInsShells addObject:path];
