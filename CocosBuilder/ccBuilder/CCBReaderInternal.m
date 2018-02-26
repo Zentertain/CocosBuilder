@@ -24,6 +24,7 @@
 
 #import "CCBReaderInternal.h"
 #import "CCBReaderInternalV1.h"
+#import "CCBFileUtil.h"
 #import "PlugInManager.h"
 #import "PlugInNode.h"
 #import "NodeInfo.h"
@@ -208,6 +209,10 @@ NSDictionary* renamedProperties = NULL;
     {
         NSString* spriteSheetFile = [serializedValue objectAtIndex:0];
         NSString* spriteFile = [serializedValue objectAtIndex:1];
+        if (!spriteFile) {
+            spriteFile = @"";
+        }
+        
         if (!spriteSheetFile || [spriteSheetFile isEqualToString:@""])
         {
             spriteSheetFile = kCCBUseRegularFile;
@@ -215,7 +220,9 @@ NSDictionary* renamedProperties = NULL;
         
         [extraProps setObject:spriteSheetFile forKey:[NSString stringWithFormat:@"%@Sheet",name]];
         [extraProps setObject:spriteFile forKey:name];
-        [TexturePropertySetter setSpriteFrameForNode:node andProperty:name withFile:spriteFile andSheetFile:spriteSheetFile];
+        [TexturePropertySetter setSpriteFrameForNode:node andProperty:name
+                                            withFile:spriteFile
+                                        andSheetFile:spriteSheetFile];
     }
     else if ([type isEqualToString:@"Animation"])
     {
@@ -231,7 +238,9 @@ NSDictionary* renamedProperties = NULL;
     else if ([type isEqualToString:@"Texture"])
     {
         NSString* spriteFile = serializedValue;
-        if (!spriteFile) spriteFile = @"";
+        if (!spriteFile) {
+            spriteFile = @"";
+        }
         [TexturePropertySetter setTextureForNode:node andProperty:name withFile:spriteFile];
         [extraProps setObject:spriteFile forKey:name];
     }
@@ -302,7 +311,7 @@ NSDictionary* renamedProperties = NULL;
         NSString* ccbFile = serializedValue;
         if (!ccbFile) ccbFile = @"";
         [NodeGraphPropertySetter setNodeGraphForNode:node andProperty:name withFile:ccbFile parentSize:parentSize];
-        [extraProps setObject:ccbFile forKey:name];
+        [extraProps setObject: ccbFile forKey:name];
     }
     else
     {

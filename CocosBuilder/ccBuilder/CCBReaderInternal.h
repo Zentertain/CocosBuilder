@@ -31,10 +31,12 @@
 
 + (ccColor3B) deserializeColor3:(id) val;
 
+
 //+ (CCNode*) nodeGraphFromDictionary:(NSDictionary*) dict;
 + (CCNode*) nodeGraphFromDictionary:(NSDictionary*) dict parentSize:(CGSize)parentSize;
 //+ (CCNode*) nodeGraphFromDocumentDictionary:(NSDictionary*) dict;
 + (CCNode*) nodeGraphFromDocumentDictionary:(NSDictionary *)dict parentSize:(CGSize) parentSize;
 //+ (void) setProp:(NSString*)name ofType:(NSString*)type toValue:(id)serializedValue forNode:(CCNode*)node;
 + (void) setProp:(NSString*)name ofType:(NSString*)type toValue:(id)serializedValue forNode:(CCNode*)node parentSize:(CGSize)parentSize;
+
 @end

@@ -30,6 +30,7 @@
 #import "CCBReaderInternal.h"
 #import "CCNode+NodeInfo.h"
 #import "SequencerSequence.h"
+#import "ZenSetting.h"
 
 @implementation NodeGraphPropertySetter
 
@@ -38,7 +39,7 @@
     CCNode* ccbFile = NULL;
     NSMutableArray* sequences = [NSMutableArray array];
     int startSequence = -1;
-    
+    ccbFileName = [[ZenSetting sharedInstance] fixResourceFilePath:ccbFileName];
     if (ccbFileName && ![ccbFileName isEqualToString:@""])
     {
         CocosBuilderAppDelegate* ad = [CocosBuilderAppDelegate appDelegate];

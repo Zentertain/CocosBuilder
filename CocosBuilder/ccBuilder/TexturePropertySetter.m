@@ -25,16 +25,23 @@
 #import "TexturePropertySetter.h"
 #import "CocosBuilderAppDelegate.h"
 #import "CCBGlobals.h"
+#import "CCBReaderInternal.h"
 #import "CCBWriterInternal.h"
 #import "ResourceManager.h"
 #import "CCBFileUtil.h"
 #import "CCNode+NodeInfo.h"
+#import "ZenSetting.h"
 
 @implementation TexturePropertySetter
 
 + (void) setSpriteFrameForNode:(CCNode*)node andProperty:(NSString*) prop withFile:(NSString*)spriteFile andSheetFile:(NSString*)spriteSheetFile
 {
     CCSpriteFrame* spriteFrame = NULL;
+    if ([spriteSheetFile isEqualToString:kCCBUseRegularFile]) {
+        spriteFile = [[ZenSetting sharedInstance] fixResourceFilePath:spriteFile];
+    } else {
+        spriteSheetFile = [[ZenSetting sharedInstance] fixResourceFilePath:spriteSheetFile];
+    }
     
     if (spriteSheetFile && ![spriteSheetFile isEqualToString:@""] && ![spriteSheetFile isEqualToString:kCCBUseRegularFile]
         && spriteFile && ![spriteFile isEqualToString:@""])
@@ -94,7 +101,7 @@
 + (void) setTextureForNode:(CCNode*)node andProperty:(NSString*) prop withFile:(NSString*) spriteFile
 {
     CCTexture2D* texture = NULL;
-    
+    spriteFile = [[ZenSetting sharedInstance] fixResourceFilePath:spriteFile];
     if (spriteFile && ![spriteFile isEqualToString:@""])
     {
         @try

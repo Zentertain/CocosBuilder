@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -1046,7 +1046,8 @@ CA
                                     <action selector="performMiniaturize:" target="-1" id="37"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Zoom" id="239">
+                            <menuItem title="Zoom" keyEquivalent="=" id="239">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="performZoom:" target="-1" id="240"/>
                                 </connections>
@@ -1119,7 +1120,7 @@ CA
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="topLeft" imageScaling="axesIndependently" image="header-bg" id="1497"/>
                             </imageView>
-                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="1495">
+                            <textField verticalHuggingPriority="750" id="1495">
                                 <rect key="frame" x="3" y="664" width="250" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Project" id="1496">
@@ -1145,7 +1146,7 @@ CA
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <clipView key="contentView" copiesOnScroll="NO" id="eSV-77-Z3r">
                                                     <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" autosaveColumns="NO" rowHeight="16" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="1502" id="1499" customClass="ResourceManagerOutlineView">
                                                             <rect key="frame" x="0.0" y="0.0" width="250" height="484"/>
@@ -1231,7 +1232,7 @@ CA
                                 <rect key="frame" x="27" y="0.0" width="5" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </box>
-                            <textField verticalHuggingPriority="750" misplaced="YES" allowsCharacterPickerTouchBarItem="NO" id="7BB-Z7-wIy">
+                            <textField verticalHuggingPriority="750" misplaced="YES" id="7BB-Z7-wIy">
                                 <rect key="frame" x="50" y="664" width="200" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" usesSingleLineMode="YES" id="ZyP-M0-MeZ">
@@ -1273,7 +1274,7 @@ CA
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="topLeft" imageScaling="axesIndependently" image="seq-ctrl-bg" id="1534"/>
                                     </imageView>
-                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="1237">
+                                    <textField verticalHuggingPriority="750" id="1237">
                                         <rect key="frame" x="5" y="83" width="220" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Structure" id="1238">
@@ -1282,7 +1283,7 @@ CA
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="1666">
+                                    <textField verticalHuggingPriority="750" id="1666">
                                         <rect key="frame" x="15" y="1" width="210" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="No chained timeline" id="1667">
@@ -1377,7 +1378,7 @@ CA
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" copiesOnScroll="NO" id="jtV-hz-C3i">
                                             <rect key="frame" x="0.0" y="0.0" width="601" height="66"/>
-                                            <autoresizingMask key="autoresizingMask"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" autosaveColumns="NO" rowHeight="14" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="571" id="570" customClass="SequencerOutlineView">
                                                     <rect key="frame" x="0.0" y="0.0" width="601" height="66"/>
@@ -1486,7 +1487,7 @@ CA
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="topLeft" image="seq-timedisplay-bg" id="1556"/>
                                     </imageView>
-                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="1557">
+                                    <textField verticalHuggingPriority="750" id="1557">
                                         <rect key="frame" x="507" y="106" width="90" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="00:00:00" id="1558">
@@ -1589,7 +1590,7 @@ CA
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                 <clipView key="contentView" copiesOnScroll="NO" id="PYw-em-loo">
                                     <rect key="frame" x="1" y="1" width="298" height="678"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view id="608" userLabel="View">
                                             <rect key="frame" x="0.0" y="0.0" width="233" height="550"/>
@@ -1622,6 +1623,54 @@ CA
             <toolbar key="toolbar" implicitIdentifier="6C6ECFE0-CD8C-41C0-A926-B653D69B96E6" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="1224">
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="1358"/>
+                    <toolbarItem implicitItemIdentifier="BE5EE8A9-A1F2-489A-A6DA-C7C12E56AEF3" label="Festival" paletteLabel="Festival" id="Xup-CU-o0z" userLabel="Festival">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="63" height="26"/>
+                        <size key="maxSize" width="99" height="26"/>
+                        <comboBox key="view" verticalHuggingPriority="750" misplaced="YES" id="VXN-fG-OPI">
+                            <rect key="frame" x="0.0" y="14" width="73" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="left" title="default" placeholderString="default" drawsBackground="YES" numberOfVisibleItems="5" id="Iks-DI-G1l">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <objectValues>
+                                    <string>default</string>
+                                    <string>christmas</string>
+                                    <string>thanksgiving</string>
+                                    <string>spring</string>
+                                </objectValues>
+                                <connections>
+                                    <action selector="selectedFestival:" target="494" id="imx-AZ-AsQ"/>
+                                </connections>
+                            </comboBoxCell>
+                        </comboBox>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="A040B574-26C7-4A37-9247-2E5D939BD8BE" label="Language" paletteLabel="Language" id="IXt-TN-vb5" userLabel="Language">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="53" height="26"/>
+                        <size key="maxSize" width="99" height="26"/>
+                        <comboBox key="view" verticalHuggingPriority="750" misplaced="YES" id="zke-zr-a02">
+                            <rect key="frame" x="3" y="14" width="53" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="left" title="default" placeholderString="default" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="rM0-IC-kgk">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <objectValues>
+                                    <string>default</string>
+                                    <string>ch</string>
+                                    <string>es</string>
+                                    <string>it</string>
+                                    <string>jp</string>
+                                    <string>pt</string>
+                                </objectValues>
+                                <connections>
+                                    <action selector="selectedLanguage:" target="494" id="4XA-P4-4c9"/>
+                                </connections>
+                            </comboBoxCell>
+                        </comboBox>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="13E602E1-2514-4F5A-BE05-2AF5460BB7D6" label="Zoom" paletteLabel="Zoom" id="1306">
                         <nil key="toolTip"/>
                         <size key="minSize" width="104" height="25"/>
@@ -1679,6 +1728,8 @@ CA
                 <defaultToolbarItems>
                     <toolbarItem reference="1306"/>
                     <toolbarItem reference="1788"/>
+                    <toolbarItem reference="Xup-CU-o0z"/>
+                    <toolbarItem reference="IXt-TN-vb5"/>
                     <toolbarItem reference="1358"/>
                 </defaultToolbarItems>
             </toolbar>

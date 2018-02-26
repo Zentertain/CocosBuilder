@@ -290,6 +290,7 @@ enum {
 - (void) updateTimelineMenu;
 - (void) updateInspectorFromSelection;
 - (void) switchToDocument:(CCBDocument*) document;
+- (void) reloadCurrentDocument;
 - (void) closeLastDocument;
 - (void) openFile:(NSString*) fileName;
 - (void) openJSFile:(NSString*) fileName;

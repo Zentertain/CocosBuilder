@@ -95,6 +95,7 @@
 #import "JavaScriptAutoCompleteHandler.h"
 #import "CCBFileUtil.h"
 #import "ResourceManagerPreviewView.h"
+#import "ZenSetting.h"
 
 #import <ExceptionHandling/NSExceptionHandler.h>
 
@@ -1169,6 +1170,13 @@ static BOOL hideAllToNextSeparator;
 - (void) switchToDocument:(CCBDocument*) document
 {
     [self switchToDocument:document forceReload:NO];
+}
+
+- (void) reloadCurrentDocument
+{
+    if (currentDocument) {
+        [self switchToDocument:currentDocument forceReload:YES];
+    }
 }
 
 - (void) addDocument:(CCBDocument*) doc
@@ -2905,6 +2913,19 @@ static BOOL hideAllToNextSeparator;
     
     cs.currentTool = [sc selectedSegment];
 }
+
+- (IBAction)selectedFestival:(id)sender {
+    NSComboBox * comboBox = sender;
+    NSString * value = [comboBox stringValue];
+    [[ZenSetting sharedInstance] setFestival:value];
+}
+
+- (IBAction)selectedLanguage:(id)sender {
+    NSComboBox * comboBox = sender;
+    NSString * value = [comboBox stringValue];
+    [[ZenSetting sharedInstance] setLanguage:value];
+}
+
 
 - (IBAction) pressedPanelVisibility:(id)sender
 {

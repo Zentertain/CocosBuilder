@@ -681,6 +681,8 @@
 		77E1995D13858DE0006C361B /* TabNewMetalRollover.png in Resources */ = {isa = PBXBuildFile; fileRef = 77E1995113858DE0006C361B /* TabNewMetalRollover.png */; };
 		77E7D04B138F777A00E8EE67 /* CCBModalSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E7D04A138F777A00E8EE67 /* CCBModalSheetController.m */; };
 		77E7D04F138F78F600E8EE67 /* StageSizeWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 77E7D04E138F78F600E8EE67 /* StageSizeWindow.m */; };
+		7B984FBB204138E3003D638F /* ZenSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B984FBA204138E3003D638F /* ZenSetting.m */; };
+		7B984FBC204138E3003D638F /* ZenSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B984FBA204138E3003D638F /* ZenSetting.m */; };
 		835DB052171561B8003A2F7B /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 835DAFA7171561B7003A2F7B /* LICENSE.txt */; };
 		835DB053171561B8003A2F7B /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 835DAFA8171561B7003A2F7B /* README.markdown */; };
 		835DB083171561B8003A2F7B /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = 835DB030171561B7003A2F7B /* About.txt */; };
@@ -1751,6 +1753,8 @@
 		77E7D04A138F777A00E8EE67 /* CCBModalSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBModalSheetController.m; sourceTree = "<group>"; };
 		77E7D04D138F78F600E8EE67 /* StageSizeWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StageSizeWindow.h; sourceTree = "<group>"; };
 		77E7D04E138F78F600E8EE67 /* StageSizeWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StageSizeWindow.m; sourceTree = "<group>"; };
+		7B984FB9204136AA003D638F /* ZenSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZenSetting.h; sourceTree = "<group>"; };
+		7B984FBA204138E3003D638F /* ZenSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZenSetting.m; sourceTree = "<group>"; };
 		835DAF3F17156161003A2F7B /* CCBHTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBHTTPServer.h; sourceTree = "<group>"; };
 		835DAF4017156161003A2F7B /* CCBHTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBHTTPServer.m; sourceTree = "<group>"; };
 		835DAF81171561B7003A2F7B /* DDData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDData.h; sourceTree = "<group>"; };
@@ -3298,6 +3302,7 @@
 				E35A136315B0392800C9AA15 /* Player Connection */,
 				E3B7AEE614E33E5700DFD402 /* Inspector Properties */,
 				E3214C3F15D3B9D0002413A7 /* Custom Properties */,
+				7B984FB620413642003D638F /* ZenSetting */,
 				E335CB071577C55F00A612EE /* Node info */,
 				776041E21498F5A70078095D /* Util */,
 				776041EE1498FC320078095D /* GUI Util */,
@@ -3416,6 +3421,15 @@
 				77E1995113858DE0006C361B /* TabNewMetalRollover.png */,
 			);
 			name = res;
+			sourceTree = "<group>";
+		};
+		7B984FB620413642003D638F /* ZenSetting */ = {
+			isa = PBXGroup;
+			children = (
+				7B984FB9204136AA003D638F /* ZenSetting.h */,
+				7B984FBA204138E3003D638F /* ZenSetting.m */,
+			);
+			name = ZenSetting;
 			sourceTree = "<group>";
 		};
 		835DAF7E171561B7003A2F7B /* CocoaHTTPServer */ = {
@@ -6206,6 +6220,7 @@
 				37AD90151E97592100EE5BCB /* TransformUtils.m in Sources */,
 				37AD90161E97592100EE5BCB /* ZipUtils.m in Sources */,
 				37AD90171E97592100EE5BCB /* CCScrollView.m in Sources */,
+				7B984FBC204138E3003D638F /* ZenSetting.m in Sources */,
 				37AD90181E97592100EE5BCB /* NSString+RelativePath.m in Sources */,
 				37AD90191E97592100EE5BCB /* RulersLayer.m in Sources */,
 				37AD901A1E97592100EE5BCB /* GuidesLayer.m in Sources */,
@@ -6527,6 +6542,7 @@
 				E36A281E152263B4004986A8 /* TransformUtils.m in Sources */,
 				E36A281F152263B4004986A8 /* ZipUtils.m in Sources */,
 				E383BF6B152478940032F371 /* CCScrollView.m in Sources */,
+				7B984FBB204138E3003D638F /* ZenSetting.m in Sources */,
 				E36F3C3D152C756D00AAD805 /* NSString+RelativePath.m in Sources */,
 				E34E5D6615357CF2000201FB /* RulersLayer.m in Sources */,
 				E3A16AF31536D096004B528A /* GuidesLayer.m in Sources */,
