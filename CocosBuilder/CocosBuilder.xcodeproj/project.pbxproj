@@ -592,6 +592,13 @@
 		37AD919A1E97592100EE5BCB /* CCNode.ccbPlugNode in Copy PlugIns */ = {isa = PBXBuildFile; fileRef = E3B7AEC514E3193500DFD402 /* CCNode.ccbPlugNode */; };
 		37F99CAD1E9F33FC009DB690 /* seq-row-channel-bg-yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */; };
 		37F99CAE1E9F33FC009DB690 /* seq-row-channel-bg-yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */; };
+		40889248209B1A7800B3E99F /* PlugInManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E3B7AEDC14E3246100DFD402 /* PlugInManager.m */; };
+		40889249209B1A7800B3E99F /* PlugInExport.m in Sources */ = {isa = PBXBuildFile; fileRef = E398C03214FB86D20078E771 /* PlugInExport.m */; };
+		4088924A209B1A7800B3E99F /* CCBX.m in Sources */ = {isa = PBXBuildFile; fileRef = E398C03614FB8A430078E771 /* CCBX.m */; };
+		4088924D209B1A7800B3E99F /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA98CFDA154E8D16006E58C5 /* CoreServices.framework */; };
+		4088924E209B1A7800B3E99F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA98CFC3154E7D1C006E58C5 /* Foundation.framework */; };
+		4088925A209B1FEA00B3E99F /* ccbparser.m in Sources */ = {isa = PBXBuildFile; fileRef = 40889257209B1A9E00B3E99F /* ccbparser.m */; };
+		4088925B209B208F00B3E99F /* NSString+RelativePath.m in Sources */ = {isa = PBXBuildFile; fileRef = E36F3C3C152C756D00AAD805 /* NSString+RelativePath.m */; };
 		581130601639C52500A86D70 /* seq-startmarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 5811305F1639C52000A86D70 /* seq-startmarker.png */; };
 		581BCFE8162DADE7007DE600 /* CCBSplitHorizontalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 581BCFE7162DADE7007DE600 /* CCBSplitHorizontalView.m */; };
 		58FA2034162D73F3006B8856 /* TB_bottomPanel.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA2031162D73F3006B8856 /* TB_bottomPanel.png */; };
@@ -1624,6 +1631,8 @@
 		37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CocosBuilder-Artist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		37AD91A11E97592100EE5BCB /* CocosBuilder-Artist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CocosBuilder-Artist-Info.plist"; path = "/Users/Plus/Code/CocosBuilder/CocosBuilder/CocosBuilder-Artist-Info.plist"; sourceTree = "<absolute>"; };
 		37F99CA91E9F3284009DB690 /* seq-row-channel-bg-yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-row-channel-bg-yellow.png"; sourceTree = "<group>"; };
+		40889252209B1A7800B3E99F /* ccbparser */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ccbparser; sourceTree = BUILT_PRODUCTS_DIR; };
+		40889257209B1A9E00B3E99F /* ccbparser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ccbparser.m; sourceTree = "<group>"; };
 		5811305E1639BF1200A86D70 /* SequencerTimelineDrawDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequencerTimelineDrawDelegate.h; sourceTree = "<group>"; };
 		5811305F1639C52000A86D70 /* seq-startmarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "seq-startmarker.png"; sourceTree = "<group>"; };
 		581BCFE6162DADE7007DE600 /* CCBSplitHorizontalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBSplitHorizontalView.h; sourceTree = "<group>"; };
@@ -2706,6 +2715,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4088924C209B1A7800B3E99F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4088924D209B1A7800B3E99F /* CoreServices.framework in Frameworks */,
+				4088924E209B1A7800B3E99F /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7789ABBB133AA82000CEFCC7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2871,6 +2889,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		40889255209B1A9E00B3E99F /* ccbparser */ = {
+			isa = PBXGroup;
+			children = (
+				40889257209B1A9E00B3E99F /* ccbparser.m */,
+			);
+			path = ccbparser;
+			sourceTree = "<group>";
+		};
 		776041E01498F4A00078095D /* Document Readers & Writers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3213,6 +3239,7 @@
 				E3B7AED114E31A7800DFD402 /* PlugIns (Nodes) */,
 				E398C01D14FB813C0078E771 /* PlugIns (Exporters) */,
 				7789ABEF133AB17100CEFCC7 /* libs */,
+				40889255209B1A9E00B3E99F /* ccbparser */,
 				FA98CFC5154E7D1C006E58C5 /* ccbpublish */,
 				7789ABC1133AA82000CEFCC7 /* Frameworks */,
 				7789ABBF133AA82000CEFCC7 /* Products */,
@@ -3241,6 +3268,7 @@
 				E3FCE8661524856D0028E8E7 /* CCScrollView.ccbPlugNode */,
 				FA98CFC1154E7D1C006E58C5 /* ccbpublish */,
 				37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */,
+				40889252209B1A7800B3E99F /* ccbparser */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -4941,6 +4969,22 @@
 			productReference = 37AD91A01E97592100EE5BCB /* CocosBuilder-Artist.app */;
 			productType = "com.apple.product-type.application";
 		};
+		40889246209B1A7800B3E99F /* ccbparser */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4088924F209B1A7800B3E99F /* Build configuration list for PBXNativeTarget "ccbparser" */;
+			buildPhases = (
+				40889247209B1A7800B3E99F /* Sources */,
+				4088924C209B1A7800B3E99F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ccbparser;
+			productName = ccbpublish;
+			productReference = 40889252209B1A7800B3E99F /* ccbparser */;
+			productType = "com.apple.product-type.tool";
+		};
 		7789ABBD133AA82000CEFCC7 /* CocosBuilder */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7789ABDC133AA82000CEFCC7 /* Build configuration list for PBXNativeTarget "CocosBuilder" */;
@@ -5313,6 +5357,7 @@
 				7789ABBD133AA82000CEFCC7 /* CocosBuilder */,
 				37AD8F2D1E97592100EE5BCB /* CocosBuilder-Artist */,
 				FA98CFC0154E7D1C006E58C5 /* ccbpublish */,
+				40889246209B1A7800B3E99F /* ccbparser */,
 			);
 		};
 /* End PBXProject section */
@@ -6339,6 +6384,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		40889247209B1A7800B3E99F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4088925B209B208F00B3E99F /* NSString+RelativePath.m in Sources */,
+				4088925A209B1FEA00B3E99F /* ccbparser.m in Sources */,
+				40889248209B1A7800B3E99F /* PlugInManager.m in Sources */,
+				40889249209B1A7800B3E99F /* PlugInExport.m in Sources */,
+				4088924A209B1A7800B3E99F /* CCBX.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7789ABBA133AA82000CEFCC7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -7194,6 +7251,56 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zenjoy.CocosBuilder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		40889250209B1A7800B3E99F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/libs\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"CC_DIRECTOR_MAC_THREAD=2",
+					NDEBUG,
+					NS_BLOCK_ASSERTIONS,
+					"CC_ENABLE_GL_STATE_CACHE=1",
+					"CCB_BUILDING_COMMANDLINE=1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		40889251209B1A7800B3E99F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/libs\"",
+				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"CC_DIRECTOR_MAC_THREAD=2",
+					NDEBUG,
+					NS_BLOCK_ASSERTIONS,
+					"CC_ENABLE_GL_STATE_CACHE=1",
+					"CCB_BUILDING_COMMANDLINE=1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -8169,6 +8276,15 @@
 			buildConfigurations = (
 				37AD919E1E97592100EE5BCB /* Debug */,
 				37AD919F1E97592100EE5BCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4088924F209B1A7800B3E99F /* Build configuration list for PBXNativeTarget "ccbparser" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40889250209B1A7800B3E99F /* Debug */,
+				40889251209B1A7800B3E99F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
