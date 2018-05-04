@@ -61,6 +61,12 @@
             ReferencedContainer = "container:CocosBuilder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "/Users/dust/Code/YummyCubes/MatchPointRes/ui/common/commonui.ccbproj"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

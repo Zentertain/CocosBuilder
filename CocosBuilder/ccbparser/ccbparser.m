@@ -114,9 +114,10 @@ BOOL parse(NSString* fileName) {
         NSArray* resDir = [[NSFileManager defaultManager] subpathsAtPath:resPath];
         for (NSString* file in resDir) {
             if ([file hasSuffix:@".ccb"]){
-                NSString* full = [NSString stringWithFormat:@"%@/%@", resPath, file];
-                NSMutableDictionary* doc = [NSMutableDictionary dictionaryWithContentsOfFile:full];
+                NSString* fullPath = [NSString stringWithFormat:@"%@/%@", resPath, file];
+                NSMutableDictionary* doc = [NSMutableDictionary dictionaryWithContentsOfFile:fullPath];
                 parseNode(doc[@"nodeGraph"]);
+                [doc writeToFile:fullPath atomically:YES];
             }
         }
     }
