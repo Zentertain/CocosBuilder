@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/dust/Code/YummyCubes/MatchPointRes/ui/common/commonui.ccbproj"
+            argument = "/Users/dust/Desktop/config.json"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
