@@ -1,0 +1,21 @@
+{
+    "proj": "/Users/dust/Code/YummyCubes/MatchPointRes/ui/common/commonui.ccbproj",
+    "cmd": "ref",
+    "dev": true,
+    "format": "zenwx.CDN + \"uioutput/common2/%s\",\n",
+    "ccb_format": "zenwx.CDN + \"uioutput/common2/%si\",\n",
+    "hide_in_dev": ["", "ccb", "ttf", "plist"],
+    "ccbs": [
+        "main.ccb",
+        "game.ccb",
+        "fte_dialog_l_tips.ccb",
+        "fte_dialog_l.ccb",
+        "fte_dialog_r_tips.ccb",
+        "fte_dialog_r.ccb",
+        "fte_arrow.ccb",
+        "game_win_tips.ccb",
+        "game_praise_1.ccb",
+        "game_praise_2.ccb",
+        "game_praise_3.ccb"
+   ]
+}

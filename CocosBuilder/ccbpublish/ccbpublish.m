@@ -151,7 +151,6 @@ int		main(int argc, const char **argv)
 			}
 			
 			NSURL				*outFile = nil;
-			
 			if (outputPath == nil) // no output path and however many files: construct file name in file's dir
 				outFile = [[file URLByDeletingPathExtension] URLByAppendingPathExtension:plugin.extension];
 			else if (operands.count == 1) // output path and only one file: use output verbatim

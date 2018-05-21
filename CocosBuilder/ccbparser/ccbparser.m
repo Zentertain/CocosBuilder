@@ -1,10 +1,25 @@
 #import <Foundation/Foundation.h>
 #import "NSString+RelativePath.h"
 #import <assert.h>
+@interface NSArray (ZUt)
+-(BOOL) containsStr: (NSString*) str;
+@end
+@implementation NSArray (ZUt)
+-(BOOL) containsStr:(NSString *)str {
+    for (NSString *item in self) {
+        if ([item isEqualToString:str]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+@end
+
+
 
 NSString *currentCCB = @"";
 
-void parseProp(NSString* name, NSString* type, id serializedValue, NSMutableSet *refs, NSMutableArray *ccbrefs) {
+void parseProp(NSString* name, NSString* type, id serializedValue, NSMutableSet *refs, NSMutableArray *ccbrefs, BOOL showPlist) {
     /*if ([type isEqualToString:@"Position"]) {
     } else if ([type isEqualToString:@"Point"] || [type isEqualToString:@"PointLock"]) {
     } else if ([type isEqualToString:@"Size"]) {
@@ -30,7 +45,9 @@ void parseProp(NSString* name, NSString* type, id serializedValue, NSMutableSet 
         if (!spriteSheetFile || [spriteSheetFile isEqualToString:@""]) {
             [refs addObject:spriteFile];
         } else {
-            printf("%-60s %-60s %-10s \n", [currentCCB UTF8String], [spriteSheetFile UTF8String], [spriteFile UTF8String]);
+            if (showPlist) {
+                printf("%-60s %-60s %-10s \n", [currentCCB UTF8String], [spriteSheetFile UTF8String], [spriteFile UTF8String]);
+            }
             [refs addObject:spriteSheetFile];
         }
     } else if ([type isEqualToString:@"Animation"]) {
@@ -73,7 +90,7 @@ NSArray* absoluteResourcePaths(NSString*projectPath, NSArray* resourcePaths) {
     return paths;
 }
 
-void parseNode(NSDictionary* dict, NSMutableSet *refs, NSMutableArray *ccbrefs) {
+void parseNode(NSDictionary* dict, NSMutableSet *refs, NSMutableArray *ccbrefs, BOOL showPlist) {
     NSArray* props = [dict objectForKey:@"properties"];
     int numProps = [props count];
     for (int i = 0; i < numProps; i++)
@@ -82,23 +99,23 @@ void parseNode(NSDictionary* dict, NSMutableSet *refs, NSMutableArray *ccbrefs) 
         NSString* type = [propInfo objectForKey:@"type"];
         NSString* name = [propInfo objectForKey:@"name"];
         id serializedValue = [propInfo objectForKey:@"value"];
-        parseProp(name, type, serializedValue, refs, ccbrefs);
+        parseProp(name, type, serializedValue, refs, ccbrefs, showPlist);
     }
     NSArray* children = [dict objectForKey:@"children"];
     for (int i = 0; i < [children count]; i++) {
-        parseNode(children[i], refs, ccbrefs);
+        parseNode(children[i], refs, ccbrefs, showPlist);
     }
 }
 
-void parseCCB(NSString* resPath, NSString* file, NSMutableSet *refs) {
+void parseCCB(NSString* resPath, NSString* file, NSMutableSet *refs, BOOL showPlist) {
     NSString* fullPath = [NSString stringWithFormat:@"%@/%@", resPath, file];
     currentCCB = file;
     NSMutableArray *ccbrefs = [NSMutableArray array];
     NSMutableDictionary* doc = [NSMutableDictionary dictionaryWithContentsOfFile:fullPath];
-    parseNode(doc[@"nodeGraph"], refs, ccbrefs);
+    parseNode(doc[@"nodeGraph"], refs, ccbrefs, showPlist);
     [doc writeToFile:fullPath atomically:YES];
     for (NSString* ccb in ccbrefs) {
-        parseCCB(resPath, ccb, refs);
+        parseCCB(resPath, ccb, refs, showPlist);
     }
 }
 
@@ -109,6 +126,12 @@ BOOL parse(NSString* fileName, NSDictionary* infos) {
     }
     
     NSString *cmd = infos[@"cmd"];
+    BOOL dev = infos[@"dev"];
+    NSArray* hide = infos[@"hide_in_dev"];
+    
+    const char* dev_format_ccb = [infos[@"ccb_format"] UTF8String];
+    const char* dev_format = [infos[@"format"] UTF8String];
+    
     if ([cmd isEqualToString:@"ref"]) {
         id resourcePaths = [dict objectForKey:@"resourcePaths"];
         id projectPath = fileName;
@@ -125,8 +148,8 @@ BOOL parse(NSString* fileName, NSDictionary* infos) {
                         continue;
                     }
                     NSMutableSet *refs = [NSMutableSet set];
-                    parseCCB(resPath, file, refs);
-                    printf("\n\n%s\n", [file UTF8String]);
+                    parseCCB(resPath, file, refs, !dev);
+                    printf("\n%s\n", [file UTF8String]);
                     
                     NSMutableArray *packedImgs = [NSMutableArray array];
                     for (NSString *res in refs) {
@@ -150,12 +173,22 @@ BOOL parse(NSString* fileName, NSDictionary* infos) {
                     unsigned long long totalSize = 0;
                     for (NSString *res in sorted) {
                         if ([res length] <= 0) { continue; }
-                        if ([[res pathExtension] isEqualToString:@"ccb"]) {
-                            printf("  %-60s\n", [res UTF8String]);
+                        if (dev) {
+                            if (![hide containsStr:[res pathExtension]]) {
+                                if ([[res pathExtension] isEqualToString:@"ccb"]) {
+                                    printf(dev_format_ccb, [res UTF8String]);
+                                } else {
+                                    printf(dev_format, [res UTF8String]);
+                                }
+                            }
                         } else {
-                            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", resPath, res] error:nil] fileSize];
-                            printf("  %-80s [%-4lld kb]\n", [res UTF8String], fileSize / 1000);
-                            totalSize += fileSize;
+                            if ([[res pathExtension] isEqualToString:@"ccb"]) {
+                                printf("  %-60s\n", [res UTF8String]);
+                            } else {
+                                unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", resPath, res] error:nil] fileSize];
+                                printf("  %-80s [%-4lld kb]\n", [res UTF8String], fileSize / 1000);
+                                totalSize += fileSize;
+                            }
                         }
                     }
                     printf("Total [%.2f kb]\n", totalSize / 1000.0);
