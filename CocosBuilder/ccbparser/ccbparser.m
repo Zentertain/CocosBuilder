@@ -15,7 +15,12 @@
 }
 @end
 
-
+typedef NS_ENUM(NSUInteger, EMatchMode ){
+    MM_NONE = -1,
+    MM_FILE = 0,
+    MM_PATH = 1,
+    MM_NODE = 2
+};
 
 NSString *currentCCB = @"";
 
@@ -90,32 +95,46 @@ NSArray* absoluteResourcePaths(NSString*projectPath, NSArray* resourcePaths) {
     return paths;
 }
 
-void parseNode(NSDictionary* dict, NSMutableSet *refs, NSMutableArray *ccbrefs, BOOL showPlist) {
-    NSArray* props = [dict objectForKey:@"properties"];
-    int numProps = [props count];
-    for (int i = 0; i < numProps; i++)
-    {
-        NSDictionary* propInfo = [props objectAtIndex:i];
-        NSString* type = [propInfo objectForKey:@"type"];
-        NSString* name = [propInfo objectForKey:@"name"];
-        id serializedValue = [propInfo objectForKey:@"value"];
-        parseProp(name, type, serializedValue, refs, ccbrefs, showPlist);
+void parseNode(NSDictionary* dict, NSMutableSet *refs, NSMutableArray *ccbrefs,NSArray* nodeClasss, BOOL showPlist, EMatchMode mode) {
+    NSString* baseClass = [dict objectForKey:@"baseClass"];
+    BOOL isParseProp = TRUE;
+    if(mode == MM_NODE){
+        isParseProp = FALSE;
+        for (NSString *pt in nodeClasss) {
+            if ([pt isEqualToString:baseClass]) {
+                isParseProp =TRUE;
+                break;
+            }
+        }
     }
+    if (isParseProp) {
+        NSArray* props = [dict objectForKey:@"properties"];
+        int numProps = [props count];
+        for (int i = 0; i < numProps; i++)
+        {
+            NSDictionary* propInfo = [props objectAtIndex:i];
+            NSString* type = [propInfo objectForKey:@"type"];
+            NSString* name = [propInfo objectForKey:@"name"];
+            id serializedValue = [propInfo objectForKey:@"value"];
+            parseProp(name, type, serializedValue, refs, ccbrefs, showPlist);
+        }
+    }
+
     NSArray* children = [dict objectForKey:@"children"];
     for (int i = 0; i < [children count]; i++) {
-        parseNode(children[i], refs, ccbrefs, showPlist);
+        parseNode(children[i], refs, ccbrefs,nodeClasss,showPlist,mode);
     }
 }
 
-void parseCCB(NSString* resPath, NSString* file, NSMutableSet *refs, BOOL showPlist) {
+void parseCCB(NSString* resPath, NSString* file, NSMutableSet *refs,NSArray* nodeClasss,BOOL showPlist, EMatchMode mode) {
     NSString* fullPath = [NSString stringWithFormat:@"%@/%@", resPath, file];
     currentCCB = file;
     NSMutableArray *ccbrefs = [NSMutableArray array];
     NSMutableDictionary* doc = [NSMutableDictionary dictionaryWithContentsOfFile:fullPath];
-    parseNode(doc[@"nodeGraph"], refs, ccbrefs, showPlist);
+    parseNode(doc[@"nodeGraph"], refs, ccbrefs,nodeClasss,showPlist,mode);
     [doc writeToFile:fullPath atomically:YES];
     for (NSString* ccb in ccbrefs) {
-        parseCCB(resPath, ccb, refs, showPlist);
+        parseCCB(resPath, ccb, refs, nodeClasss,showPlist,mode);
     }
 }
 
@@ -131,6 +150,7 @@ NSMutableDictionary* parse(NSString* fileName, NSDictionary* infos) {
     
     NSString* dev_format_ccb = infos[@"ccb_format"];
     NSString* dev_format = infos[@"format"];
+    NSArray* nodeClasss = infos[@"node_classs"];
     
     NSMutableDictionary* resultdict = [NSMutableDictionary dictionary];
     [resultdict setValue:[NSMutableSet set] forKey:dev_format_ccb];
@@ -149,74 +169,84 @@ NSMutableDictionary* parse(NSString* fileName, NSDictionary* infos) {
                 NSArray *ccbs = infos[@"ccbs"];
                 NSString* ccbPath = infos[@"ccb_path"];
                 
-                BOOL checkMatch = FALSE;
+                 EMatchMode mode = MM_NONE;
                 
                 if(ccbPath && [ccbPath length]>0 && [file containsString:ccbPath]){
-                    checkMatch=TRUE;
+                    mode = MM_PATH;
                 }
                 
-                if(!checkMatch){
+                if(mode==MM_NONE){
                     for (NSString *pt in ccbs) {
                         if ([file containsString:pt]) {
-                            checkMatch=TRUE;
+                            mode = MM_FILE;
                             break;
                         }
                     }
                 }
-
-                if (checkMatch) {
-                    NSMutableSet *refs = [NSMutableSet set];
-                    parseCCB(resPath, file, refs, !dev);
-                    printf("\n%s\n", [file UTF8String]);
-                    
-                    NSMutableArray *packedImgs = [NSMutableArray array];
-                    for (NSString *res in refs) {
-                        if ([res length] <= 0) { continue; }
-                        if ([[res pathExtension] isEqualToString:@"plist"]) {
-                            NSMutableDictionary* pack = [NSMutableDictionary dictionaryWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", resPath, res]];
-                            if (pack && pack[@"metadata"] && pack[@"metadata"][@"textureFileName"]) {
-                                NSString *pureName = pack[@"metadata"][@"textureFileName"];
-                                NSString *pathName = [NSString stringWithFormat:@"%@/%@", [res stringByDeletingLastPathComponent], pureName];
-                                [packedImgs addObject:pathName];
-                            }
-                        }
+                
+                if(mode==MM_NONE){
+                    if([nodeClasss count]>0){
+                        mode = MM_NODE;
                     }
-                    [refs addObjectsFromArray:packedImgs];
-                    
-                    NSArray* sorted = [[refs allObjects] sortedArrayUsingComparator: ^(NSString* string1, NSString* string2)
-                                       {
-                                           return [string1 localizedCompare: string2];
-                                       }];
-
-                    unsigned long long totalSize = 0;
-                    for (NSString *res in sorted) {
-                        if ([res length] <= 0) { continue; }
-                        if (dev) {
-                            if (![hide containsStr:[res pathExtension]]) {
-                                NSString*  keyStr= nil;
-                                if ([[res pathExtension] isEqualToString:@"ccb"]) {
-                                    keyStr =dev_format_ccb;
-                                } else {
-                                    keyStr =dev_format;
-                                }
-                                NSMutableSet* valueSet = [resultdict objectForKey:keyStr];
-                                NSString* formatStr = [NSString stringWithFormat:keyStr,[res UTF8String]];
-                                [valueSet addObject:formatStr];
-                                printf("%s",[formatStr UTF8String]);
-                            }
-                        } else {
-                            if ([[res pathExtension] isEqualToString:@"ccb"]) {
-                                printf("  %-60s\n", [res UTF8String]);
-                            } else {
-                                unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", resPath, res] error:nil] fileSize];
-                                printf("  %-80s [%-4lld kb]\n", [res UTF8String], fileSize / 1000);
-                                totalSize += fileSize;
-                            }
-                        }
-                    }
-                    printf("Total [%.2f kb]\n", totalSize / 1000.0);
-                   
                 }
+                if(mode==MM_NONE){
+                    continue;
+                }
+                NSMutableSet *refs = [NSMutableSet set];
+                parseCCB(resPath, file, refs,nodeClasss,!dev,mode);
+                if ([refs count] <=0) {
+                    continue;
+                }
+                printf("\n%s\n", [file UTF8String]);
+                
+                NSMutableArray *packedImgs = [NSMutableArray array];
+                for (NSString *res in refs) {
+                    if ([res length] <= 0) { continue; }
+                    if ([[res pathExtension] isEqualToString:@"plist"]) {
+                        NSMutableDictionary* pack = [NSMutableDictionary dictionaryWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", resPath, res]];
+                        if (pack && pack[@"metadata"] && pack[@"metadata"][@"textureFileName"]) {
+                            NSString *pureName = pack[@"metadata"][@"textureFileName"];
+                            NSString *pathName = [NSString stringWithFormat:@"%@/%@", [res stringByDeletingLastPathComponent], pureName];
+                            [packedImgs addObject:pathName];
+                        }
+                    }
+                }
+                [refs addObjectsFromArray:packedImgs];
+                
+                NSArray* sorted = [[refs allObjects] sortedArrayUsingComparator: ^(NSString* string1, NSString* string2)
+                                   {
+                                       return [string1 localizedCompare: string2];
+                                   }];
+
+                unsigned long long totalSize = 0;
+                for (NSString *res in sorted) {
+                    if ([res length] <= 0) { continue; }
+                    if (dev) {
+                        if (![hide containsStr:[res pathExtension]]) {
+                            NSString*  keyStr= nil;
+                            if ([[res pathExtension] isEqualToString:@"ccb"]) {
+                                keyStr =dev_format_ccb;
+                            } else {
+                                keyStr =dev_format;
+                            }
+                            NSMutableSet* valueSet = [resultdict objectForKey:keyStr];
+                            NSString* formatStr = [NSString stringWithFormat:keyStr,[res UTF8String]];
+                            [valueSet addObject:formatStr];
+                            printf("%s",[formatStr UTF8String]);
+                        }
+                    } else {
+                        if ([[res pathExtension] isEqualToString:@"ccb"]) {
+                            printf("  %-60s\n", [res UTF8String]);
+                        } else {
+                            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", resPath, res] error:nil] fileSize];
+                            printf("  %-80s [%-4lld kb]\n", [res UTF8String], fileSize / 1000);
+                            totalSize += fileSize;
+                        }
+                    }
+                }
+                printf("Total [%.2f kb]\n", totalSize / 1000.0);
+                   
+                
             }
         }
     }

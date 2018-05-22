@@ -1,10 +1,13 @@
 {
-    "proj": "/Users/dust/Code/YummyCubes/MatchPointRes/ui/common/commonui.ccbproj",
+    "proj": "/Users/lichuang/Documents/workspace/YummyCubes/MatchPointRes/ui/common/commonui.ccbproj",
     "cmd": "ref",
     "dev": true,
     "format": "zenwx.CDN + \"uioutput/common2/%s\",\n",
     "ccb_format": "zenwx.CDN + \"uioutput/common2/%si\",\n",
     "hide_in_dev": ["", "ccb", "ttf", "plist"],
+    "node_classs":[
+        "CCParticleSystemQuad"
+    ],
     "ccb_path":"native/system/effects",
     "ccbs": [
         "main.ccb",
