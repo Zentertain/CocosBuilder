@@ -119,18 +119,22 @@ void parseCCB(NSString* resPath, NSString* file, NSMutableSet *refs, BOOL showPl
     }
 }
 
-BOOL parse(NSString* fileName, NSDictionary* infos) {
+NSMutableDictionary* parse(NSString* fileName, NSDictionary* infos) {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithContentsOfFile:fileName];
     if (!dict) {
-        return NO;
+        return nil;
     }
     
     NSString *cmd = infos[@"cmd"];
     BOOL dev = infos[@"dev"];
     NSArray* hide = infos[@"hide_in_dev"];
     
-    const char* dev_format_ccb = [infos[@"ccb_format"] UTF8String];
-    const char* dev_format = [infos[@"format"] UTF8String];
+    NSString* dev_format_ccb = infos[@"ccb_format"];
+    NSString* dev_format = infos[@"format"];
+    
+    NSMutableDictionary* resultdict = [NSMutableDictionary dictionary];
+    [resultdict setValue:[NSMutableSet set] forKey:dev_format_ccb];
+    [resultdict setValue:[NSMutableSet set] forKey:dev_format];
     
     if ([cmd isEqualToString:@"ref"]) {
         id resourcePaths = [dict objectForKey:@"resourcePaths"];
@@ -143,10 +147,24 @@ BOOL parse(NSString* fileName, NSDictionary* infos) {
                     continue;
                 }
                 NSArray *ccbs = infos[@"ccbs"];
-                for (NSString *pt in ccbs) {
-                    if (![file containsString:pt]) {
-                        continue;
+                NSString* ccbPath = infos[@"ccb_path"];
+                
+                BOOL checkMatch = FALSE;
+                
+                if(ccbPath && [ccbPath length]>0 && [file containsString:ccbPath]){
+                    checkMatch=TRUE;
+                }
+                
+                if(!checkMatch){
+                    for (NSString *pt in ccbs) {
+                        if ([file containsString:pt]) {
+                            checkMatch=TRUE;
+                            break;
+                        }
                     }
+                }
+
+                if (checkMatch) {
                     NSMutableSet *refs = [NSMutableSet set];
                     parseCCB(resPath, file, refs, !dev);
                     printf("\n%s\n", [file UTF8String]);
@@ -175,11 +193,16 @@ BOOL parse(NSString* fileName, NSDictionary* infos) {
                         if ([res length] <= 0) { continue; }
                         if (dev) {
                             if (![hide containsStr:[res pathExtension]]) {
+                                NSString*  keyStr= nil;
                                 if ([[res pathExtension] isEqualToString:@"ccb"]) {
-                                    printf(dev_format_ccb, [res UTF8String]);
+                                    keyStr =dev_format_ccb;
                                 } else {
-                                    printf(dev_format, [res UTF8String]);
+                                    keyStr =dev_format;
                                 }
+                                NSMutableSet* valueSet = [resultdict objectForKey:keyStr];
+                                NSString* formatStr = [NSString stringWithFormat:keyStr,[res UTF8String]];
+                                [valueSet addObject:formatStr];
+                                printf("%s",[formatStr UTF8String]);
                             }
                         } else {
                             if ([[res pathExtension] isEqualToString:@"ccb"]) {
@@ -192,12 +215,12 @@ BOOL parse(NSString* fileName, NSDictionary* infos) {
                         }
                     }
                     printf("Total [%.2f kb]\n", totalSize / 1000.0);
-                    break;
+                   
                 }
             }
         }
     }
-    return YES;
+    return resultdict;
 }
 
 int	main(int argc, const char **argv) {
@@ -218,7 +241,26 @@ int	main(int argc, const char **argv) {
         if (data) {
             id dict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
             NSString *proj = dict[@"proj"];
-            parse(proj, dict);
+            NSMutableDictionary* result= parse(proj, dict);
+            if(result){
+                printf("\n");
+                printf("*******************result*********************\n");
+                for(NSString* key in [result allKeys]){
+                    NSMutableSet* values = [result objectForKey:key];
+                    if(values && [values count] >0){
+                        NSArray* sorted = [[values allObjects] sortedArrayUsingComparator: ^(NSString* string1, NSString* string2)
+                                           {
+                                               return [string1 localizedCompare: string2];
+                                           }];
+                        printf("format:%s\n",[key UTF8String]);
+                        for (NSString* value in sorted) {
+                            printf("%s",[value UTF8String]);
+                        }
+                    }
+
+                }
+            }
+            
         }
 
     }

@@ -5,6 +5,7 @@
     "format": "zenwx.CDN + \"uioutput/common2/%s\",\n",
     "ccb_format": "zenwx.CDN + \"uioutput/common2/%si\",\n",
     "hide_in_dev": ["", "ccb", "ttf", "plist"],
+    "ccb_path":"native/system/effects",
     "ccbs": [
         "main.ccb",
         "game.ccb",
