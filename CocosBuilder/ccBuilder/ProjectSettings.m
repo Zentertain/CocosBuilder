@@ -369,13 +369,14 @@
         [generatedSpriteSheetsDict setObject:ssDict forKey:ssFile];
     }
     [dict setObject:generatedSpriteSheetsDict forKey:@"generatedSpriteSheets"];
-    
+    /*
     if (versionStr)
     {
         [dict setObject:versionStr forKey:@"versionStr"];
     }
     
     [dict setObject:[NSNumber numberWithBool:needRepublish] forKey:@"needRepublish"];
+     */
     return dict;
 }
 
